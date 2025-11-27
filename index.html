@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>銀魂馬拉松時間表 (GAS API版)</title>
+    
+    <!-- [外部資源] 引入 Tailwind CSS 用於快速切版 -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- [設定] Tailwind CSS 全域設定 -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        slate: { 800: '#1e293b', 900: '#0f172a' }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        /* [樣式] 頁面載入時的淡入動畫與 Loading 轉圈圈樣式 */
+        body { opacity: 0; transition: opacity 0.3s; }
+        body.loaded { opacity: 1; }
+        .loader {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #3b82f6;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    </style>
+</head>
+<body class="bg-slate-900 text-slate-100">
+    <!-- React 應用程式掛載點 -->
+    <div id="root"></div>
+
+    <!-- [核心程式] 引入 React 與相關套件 -->
+    <script type="module">
+        import React, { useState, useEffect, useMemo } from 'https://esm.sh/react@18.2.0';
+        import { createRoot } from 'https://esm.sh/react-dom@18.2.0/client';
+        import { Clock, Play, Calendar, ChevronRight, Tv, Radio, AlertCircle, CheckCircle, RotateCw, Server, Code } from 'https://esm.sh/lucide-react@0.292.0';
+
+        // ==========================================
+        // ▼ [設定區] API 連結設定 ▼
+        // ==========================================
+        
+        // 請填入您部署的 Google Apps Script (GAS) Web App 網址
+        const GAS_API_URL = "https://script.google.com/macros/s/AKfycbxQJbkJswzhPYXpH7AzP21E-LDTvebEzfSTQJtFbOeS28z2H8DywZentjSJB5XgV8pfHA/exec"; 
+        
+        // [測試資料] 當 API 未設定或連線失敗時使用的展示資料
+        const getDemoData = () => {
+            const now = new Date();
+            const todayStr = `${now.getMonth() + 1}/${now.getDate()}`;
+            const getHourStr = (offset) => String((now.getHours() + offset) % 24).padStart(2, '0');
+            return [
+                { id: 1, time: `${todayStr} 週${"日一二三四五六"[now.getDay()]} ${getHourStr(0)}:${String(now.getMinutes()).padStart(2, '0')}`, ep: "第256話", title: "測試資料：目前播放", desc: "資料來自模擬數據，請設定 GAS API。", next_time: "11/27 週四 17:35" },
+                { id: 2, time: `${todayStr} 週${"日一二三四五六"[now.getDay()]} ${getHourStr(1)}:00`, ep: "第1話", title: "測試資料：下一集", desc: "這是下一集的測試內容。", next_time: "11/28 週五 20:35" },
+                { id: 3, time: `${todayStr} 週${"日一二三四五六"[now.getDay()]} ${getHourStr(2)}:00`, ep: "第90話", title: "測試資料：下下一集", desc: "這是下下一集的測試內容。", next_time: "11/29 週六 22:35" },
+            ];
+        };
+        const FALLBACK_DATA = getDemoData();
+
+        // ==========================================
+        // ▼ [主元件] 應用程式邏輯核心 ▼
+        // ==========================================
+        const ProgramSchedule = () => {
+            // [狀態管理]
+            const [currentTime, setCurrentTime] = useState(new Date()); // 目前系統時間
+            const [scheduleData, setScheduleData] = useState([]);       // 節目表資料
+            const [loading, setLoading] = useState(true);               // 載入中狀態
+            const [error, setError] = useState(null);                   // 錯誤訊息
+
+            // [工具函式] 解析 "11/26 週三 23:04" 格式的時間字串為 Date 物件
+            const parseDateTime = (timeStr) => {
+                if (!timeStr) return null;
+                const regex = /(\d{1,2})\/(\d{1,2})\s+.*?\s+(\d{1,2}):(\d{1,2})/;
+                const match = timeStr.match(regex);
+                if (match) {
+                    const now = new Date();
+                    const year = now.getFullYear();
+                    const month = parseInt(match[1], 10) - 1; 
+                    const day = parseInt(match[2], 10);
+                    const hour = parseInt(match[3], 10);
+                    const minute = parseInt(match[4], 10);
+                    let dateObj = new Date(year, month, day, hour, minute);
+                    // 簡易跨年處理
+                    if (now.getMonth() === 11 && month === 0) dateObj.setFullYear(year + 1);
+                    if (now.getMonth() === 0 && month === 11) dateObj.setFullYear(year - 1);
+                    return dateObj;
+                }
+                return null;
+            };
+
+            // [副作用 1] 從 GAS API 抓取資料
+            useEffect(() => {
+                const fetchData = async () => {
+                    // 若未設定 API URL，直接使用測試資料
+                    if (GAS_API_URL.includes("您的GAS_ID")) {
+                        processData(FALLBACK_DATA);
+                        setLoading(false);
+                        return;
+                    }
+
+                    try {
+                        // 加上 nocache 參數避免快取，確保拿到最新資料
+                        const response = await fetch(`${GAS_API_URL}?nocache=${Date.now()}`);
+                        if (!response.ok) throw new Error(`GAS 回應錯誤: ${response.status}`);
+                        const jsonData = await response.json();
+
+                        if (Array.isArray(jsonData)) {
+                            processData(jsonData);
+                            setError(null);
+                        } else {
+                            throw new Error("API 回傳格式錯誤 (非陣列)");
+                        }
+                        setLoading(false);
+                    } catch (err) {
+                        console.error("Fetch Error:", err);
+                        let msg = err.message;
+                        if (msg.includes("Failed to fetch")) msg = "存取被拒，請檢查 GAS 權限是否為「任何人」";
+                        setError(`無法連接 GAS: ${msg}`);
+                        if (scheduleData.length === 0) processData(FALLBACK_DATA); // 失敗時顯示舊資料或測試資料
+                        setLoading(false);
+                    }
+                };
+
+                fetchData(); // 初次執行
+                const intervalId = setInterval(fetchData, 60000); // 每 60 秒自動更新
+                return () => clearInterval(intervalId);
+            }, []); 
+
+            // [資料處理] 將原始資料轉換為包含 Date 物件的格式並排序
+            const processData = (data) => {
+                const processed = data.map(item => ({
+                    ...item,
+                    dateObj: parseDateTime(item.time)
+                })).filter(item => item.dateObj !== null)
+                  .sort((a, b) => a.dateObj - b.dateObj);
+                setScheduleData(processed);
+            };
+
+            // [副作用 2] 每秒更新本地時間
+            useEffect(() => {
+                document.body.classList.add('loaded');
+                const timer = setInterval(() => setCurrentTime(new Date()), 1000);
+                return () => clearInterval(timer);
+            }, []);
+
+            // [計算邏輯] 判斷目前播放哪一集 (Live 狀態)
+            const scheduleStatus = useMemo(() => {
+                if (scheduleData.length === 0) return { index: -1, status: 'empty' };
+                const now = currentTime.getTime();
+                let foundIndex = -1;
+                // 尋找最後一個「開始時間 <= 現在時間」的節目
+                for (let i = 0; i < scheduleData.length; i++) {
+                    if (scheduleData[i].dateObj.getTime() <= now) {
+                        foundIndex = i;
+                    } else {
+                        break;
+                    }
+                }
+                if (foundIndex === -1) return { index: -1, status: 'upcoming' };
+                return { index: foundIndex, status: 'live' };
+            }, [currentTime, scheduleData]);
+
+            const currentIndex = scheduleStatus.index;
+            const currentProgram = currentIndex !== -1 ? scheduleData[currentIndex] : null;
+            
+            // [計算邏輯] 決定「接下來」要顯示哪兩集
+            let nextPrograms = [];
+            if (scheduleStatus.status === 'upcoming') {
+                nextPrograms = scheduleData.slice(0, 2);
+            } else if (scheduleStatus.status === 'live') {
+                nextPrograms = scheduleData.slice(currentIndex + 1, currentIndex + 3);
+            }
+
+            // [格式化工具]
+            const formatTimeHeader = (date) => date.toLocaleTimeString('zh-TW', { hour12: false, hour: '2-digit', minute: '2-digit', second: '2-digit' });
+            const formatDateHeader = (date) => date.toLocaleDateString('zh-TW', { month: 'numeric', day: 'numeric', weekday: 'short' });
+
+            // [畫面] 載入中狀態
+            if (loading) {
+                return React.createElement('div', { className: "min-h-screen bg-slate-900 flex flex-col items-center justify-center text-slate-400 gap-4" },
+                    React.createElement('div', { className: "loader" }),
+                    React.createElement('p', null, "載入網頁中...")
+                );
+            }
+
+            // ==========================================
+            // ▼ [渲染區] UI 畫面結構 ▼
+            // ==========================================
+            return React.createElement(
+                'div',
+                { className: "min-h-screen bg-slate-900 text-slate-100 font-sans selection:bg-blue-500 selection:text-white" },
+                
+                // --- [區塊 1] 頁首導航列 (Header) ---
+                // 包含 Logo、標題與右上角即時時鐘
+                React.createElement('header', { className: "bg-slate-800 border-b border-slate-700 sticky top-0 z-50 shadow-md" },
+                    React.createElement('div', { className: "container mx-auto px-4 py-3 flex justify-between items-center" },
+                        // 左側：Logo 與標題
+                        React.createElement('div', { className: "flex items-center space-x-2" },
+                            // 1. 電視圖示 (維持不變)
+                            React.createElement('div', { className: "bg-blue-600 p-1.5 rounded-lg" },
+                                React.createElement(Tv, { size: 20, className: "text-white" })
+                            ),
+                            // 2. 文字區塊 (改成垂直排列：上方標題、下方作者)
+                            React.createElement('div', { className: "flex flex-col" },
+                                React.createElement('span', { className: "font-bold text-m sm:text-lg tracking-wide leading-tight" }, "銀魂馬拉松時間表"),
+                                React.createElement('span', { className: "font-bold text-m sm:text-lg tracking-wide self-end" }, "作者 : extremevs")
+                            )
+                        ),
+                        // 右側：日期與時間 (text-xl 控制字體大小)
+                        React.createElement('div', { className: "flex flex-col items-end sm:flex-row sm:items-center sm:space-x-3 bg-slate-900/50 px-3 py-1.5 rounded-lg border border-slate-600/50" },
+                            React.createElement('span', { className: "text-xl text-white-400 font-mono" }, formatDateHeader(currentTime)),
+                            React.createElement('div', { className: "flex items-center space-x-2" },
+                                React.createElement(Clock, { size: 16, className: "text-blue-300" }),
+                                React.createElement('span', { className: "font-mono text-xl font-bold text-blue-100 tabular-nums" }, formatTimeHeader(currentTime))
+                            )
+                        )
+                    )
+                ),
+
+                // --- [區塊 2] 錯誤訊息顯示區 ---
+                error && React.createElement('div', { className: "bg-red-900/50 border-l-4 border-red-500 text-red-100 p-4 m-4 flex items-center gap-3" },
+                    React.createElement(AlertCircle, { size: 20 }),
+                    React.createElement('span', null, error)
+                ),
+                
+                // 主要內容容器
+                React.createElement('main', { className: "container mx-auto px-4 py-6 space-y-8" },
+
+                                    // --- [新增區塊] 頁首下方按鈕群組 (New Button Rows) ---
+                    React.createElement('section', { className: "space-y-3" },
+                        
+                        // 1. 第一排：3個超連結按鈕 (Grid cols 3)，無圖示
+                        React.createElement('div', { className: "grid grid-cols-3 gap-3" },
+                            [
+                                // ▼ 第一排按鈕連結設定 ▼
+                                { text: '銀魂Youtube直播', url: 'https://www.youtube.com/watch?v=SCJp9x-muYE' }, 
+                                { text: '完整時間表',   url: 'https://docs.google.com/spreadsheets/d/1EkbUExn62tz82eQ5OHu1UAJ6jmtCSUh1C6cWrwV6y7M/edit?usp=sharing' },
+                                { text: '作者Threads', url: 'https://www.threads.com/@ptt_extremevs?hl=zh-tw' }
+                            ].map((item, i) => 
+                                React.createElement('a', { 
+                                    key: i, 
+                                    href: item.url, // 使用設定的網址
+                                    target: "_blank", // 在新分頁開啟
+                                    rel: "noopener noreferrer", // 安全性設定
+                                    className: "flex items-center justify-center bg-blue-900/40 hover:bg-blue-600 text-blue-100 hover:text-white py-3 rounded-lg text-center font-bold text-sm sm:text-base transition-all duration-200 border border-blue-500/30 shadow-sm cursor-pointer" 
+                                }, 
+                                    item.text
+                                )
+                            )
+                        ),
+
+                        // 2. 第二排：5個超連結按鈕 (Grid cols 5)，無圖示
+                        React.createElement('div', { className: "grid grid-cols-5 gap-2" },
+                            [
+                                // ▼ 第二排按鈕連結設定 ▼
+                                { text: 'Ani-One Asia', url: 'https://www.youtube.com/@AniOneAsia' },
+                                { text: '銀魂 THE FINAL', url: 'https://ani.gamer.com.tw/animeVideo.php?sn=37723' },
+                                { text: '第一季 001~053', url: 'https://www.youtube.com/playlist?list=PLxSscENEp7JjYz_Mr7sak82-ImkZfxLO1' },
+                                { text: '第二季 054~099', url: 'https://www.youtube.com/playlist?list=PLxSscENEp7JibnGLzxdM-ftMb74lnghSz' },
+                                { text: '第三季 100~150', url: 'https://www.youtube.com/playlist?list=PLxSscENEp7JiO3ZM-4pFsJ2c8VwnslLJg' }
+                            ].map((item, i) => 
+                                React.createElement('a', { 
+                                    key: i, 
+                                    href: item.url,
+                                    target: "_blank",
+                                    rel: "noopener noreferrer",
+                                    className: "flex items-center justify-center bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-white py-2 rounded text-xs sm:text-sm font-medium transition-colors border border-slate-700 hover:border-slate-500 cursor-pointer" 
+                                }, item.text)
+                            )
+                        ),
+                        React.createElement('div', { className: "grid grid-cols-5 gap-2" },
+                            [
+                                // ▼ 第三排按鈕連結設定 ▼
+                                { text: '第四季 151~201', url: 'https://www.youtube.com/playlist?list=PLxSscENEp7Jhwyjh_CUvG9Y3Mw2ccdv3qa' },
+                                { text: '第五季 202~252', url: 'https://www.youtube.com/playlist?list=PLxSscENEp7Jhr-Or-HSWFpPvjAsFdAKkR' },
+                                { text: '第六季 253~265', url: 'https://www.youtube.com/playlist?list=PLxSscENEp7JgfDq4Lgru96YoEs74JG0oR' },
+                                { text: '第七季 266~316', url: 'https://www.youtube.com/playlist?list=PLxSscENEp7JiPOoEgpgbcV_17Y0kLUkyl' },
+                                { text: '第八季 317~367', url: 'https://www.youtube.com/playlist?list=PLxSscENEp7Jh4rDe7fFRpu8UnFCMR1Vpn' }
+                            ].map((item, i) => 
+                                React.createElement('a', { 
+                                    key: i, 
+                                    href: item.url,
+                                    target: "_blank",
+                                    rel: "noopener noreferrer",
+                                    className: "flex items-center justify-center bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-white py-2 rounded text-xs sm:text-sm font-medium transition-colors border border-slate-700 hover:border-slate-500 cursor-pointer" 
+                                }, item.text)
+                            )
+                        )
+                    ),
+
+                    // --- [區塊 3] 目前播放 / 重點展示區 (Hero Section) ---
+                    // 顯示目前正在播放的節目，包含大字時間與進度條
+                    React.createElement('section', { className: "relative overflow-hidden rounded-2xl bg-gradient-to-br from-blue-900 to-slate-800 border border-slate-700 shadow-2xl" },
+                        React.createElement('div', { className: "absolute top-0 right-0 -mt-10 -mr-10 w-64 h-64 bg-blue-500 rounded-full blur-3xl opacity-10 pointer-events-none" }),
+                        React.createElement('div', { className: "relative p-6 md:p-10 flex flex-col md:flex-row gap-6 md:gap-10 items-start" },
+                            
+                            // 左欄：狀態與開始時間
+                            React.createElement('div', { className: "flex-shrink-0 flex flex-col items-start gap-3 min-w-[140px]" },
+                                // Live 或 Upcoming 標籤
+                                scheduleStatus.status === 'live' ? 
+                                    React.createElement('span', { className: "flex items-center gap-2 bg-red-600 text-white text-xs font-bold px-3 py-1 rounded-full animate-pulse shadow-lg shadow-red-900/50" },
+                                        React.createElement(Radio, { size: 20 }), " LIVE "
+                                    ) :
+                                    React.createElement('span', { className: "flex items-center gap-2 bg-emerald-600 text-white text-xs font-bold px-3 py-1 rounded-full shadow-lg" },
+                                        React.createElement(Calendar, { size: 12 }), " UPCOMING "
+                                    ),
+                                
+                                // 標題：本集開始時間
+                                React.createElement('div', { className: "text-slate-300 font-semibold tracking-wider text-xl mt-2" }, 
+                                    scheduleStatus.status === 'live' ? "本集開始時間" : "馬拉松即將開始"
+                                ),
+
+                                // 時間顯示：
+                                scheduleStatus.status === 'live' && currentProgram ? 
+                                    React.createElement('div', { className: "flex flex-col" },
+
+                                        currentProgram.time.includes(' ') && React.createElement('div', { className: "text-2xl text-slate-200 font-bold mt-1" },  //日期
+                                             currentProgram.time.split(' ').slice(0, -1).join(' ')
+                                        ),
+                                        React.createElement('div', { className: "text-4xl md:text-5xl font-black text-slate-200 tracking-tighter drop-shadow-lg font-mono" },   //時間
+                                            currentProgram.time.includes(' ') ? currentProgram.time.split(' ').pop() : currentProgram.time
+                                        )
+                                        
+                                    ) :
+                                    (scheduleData[0] && React.createElement('div', { className: "text-3xl md:text-4xl font-bold text-white tracking-tighter font-mono" },
+                                        scheduleData[0].time
+                                    )),
+                                
+                                // 補充資訊：系統目前時間
+                                /*
+                                React.createElement('div', { className: "text-slate-400 text-sm mt-1 font-mono" }, 
+                                    `目前時間: ${currentTime.toLocaleTimeString('zh-TW', { hour12: false, hour: '2-digit', minute:'2-digit' })}`
+                                )
+                                    */
+
+                            ),
+
+                            // 右欄：節目詳細資訊 (標題、簡介)
+                            (currentProgram || scheduleData[0]) && React.createElement('div', { className: "flex-grow space-y-3 pt-2" },
+                                React.createElement('div', { className: "flex items-center gap-3 text-blue-300 font-bold text-xl" },  
+                                    React.createElement('span', { className: "bg-blue-500/20 px-2 py-0.5 rounded text-slate-200 border border-blue-500/30" }, //話數
+                                        (scheduleStatus.status === 'live' ? currentProgram.ep : scheduleData[0].ep)
+                                    ),
+                                ),
+                                React.createElement('h1', { className: "text-xl md:text-2xl font-bold text-slate-300 leading-tight" }, //標題
+                                    (scheduleStatus.status === 'live' ? currentProgram.title : scheduleData[0].title)
+                                ),
+                                React.createElement('p', { className: "text-slate-400 text-base leading-relaxed max-w-2xl" },   //說明
+                                    (scheduleStatus.status === 'live' ? currentProgram.desc : scheduleData[0].desc)
+                                ),
+
+                                // 裝飾用進度條
+                                /*
+                                scheduleStatus.status === 'live' && React.createElement('div', { className: "w-full h-1.5 bg-slate-700/50 rounded-full mt-6 overflow-hidden" },
+                                    React.createElement('div', { className: "h-full bg-blue-500 rounded-full w-1/3 shadow-[0_0_10px_rgba(59,130,246,0.5)]" })
+                                )
+                                    */
+                            )
+                        )
+                    ),
+
+                    // --- [區塊 4] 接下來播放 (Next Cards) ---
+                    // 顯示下兩集的卡片區塊
+                    nextPrograms.length > 0 && React.createElement('section', null,
+                        React.createElement('div', { className: "flex items-center gap-2 mb-4" },
+                            React.createElement(ChevronRight, { className: "text-blue-500" }),
+                            React.createElement('h2', { className: "text-xl font-bold text-white" }, "接下來")
+                        ),
+                        React.createElement('div', { className: "grid grid-cols-1 md:grid-cols-2 gap-4" },
+                            nextPrograms.map((prog, idx) => 
+                                React.createElement('div', { key: idx, className: "bg-slate-800/60 border border-slate-700/50 rounded-xl p-3 hover:bg-slate-800 transition-colors duration-300 flex flex-row sm:flex-row gap-4" },
+                                    React.createElement('div', { className: "min-w-[100px] flex flex-col justify-center items-center sm:items-start border-r sm:border-b-0 sm:border-r border-slate-700 pr-4 sm:pb-0 sm:pr-4" },
+                                        // 下面這行處理日期顯示 
+                                        React.createElement('span', { className: "text-base font-bold text-blue-200 mt-1 uppercase tracking-wider" }, prog.time.split(' ')[0]),
+                                        // 下面這行處理時間顯示
+                                        React.createElement('span', { className: "text-lg font-bold text-blue-200 font-mono text-center sm:text-left" }, prog.time.split(' ').slice(1).join(' '))
+                                        
+                                        
+                                    ),
+                                    React.createElement('div', { className: "flex flex-col justify-center" },
+                                        // 集數標籤 (Ep.xx)
+                                        React.createElement('div', { className: "flex items-center gap-2 mb-1" },
+                                            React.createElement('span', { className: "text-base font-bold text-blue-200 bg-slate-700 px-1.5 py-0.5 rounded" }, prog.ep)
+                                        ),
+                                        // 節目標題
+                                        React.createElement('h3', { className: "text-lg font-bold text-blue-300 mb-1" }, prog.title),
+                                        // 節目簡介 (限制顯示兩行)
+                                        React.createElement('p', { className: "text-sm text-blue-400 line-clamp-2" }, prog.desc)
+                                    )
+                                )
+                            )
+                        )
+                    ),
+
+                    // --- [區塊 5] 完整節目清單 (Full Schedule List) ---
+                    // 三行式排版：時間+狀態 | 標題 | 說明
+                    // 包含正在播放項目的紅色醒目效果
+                    React.createElement('section', { className: "bg-slate-800 rounded-xl border border-slate-700 overflow-hidden shadow-lg" },
+                        React.createElement('div', { className: "p-4 bg-slate-800/80 border-b border-slate-700 flex items-center justify-between backdrop-blur-sm sticky top-0 z-10" },
+                            React.createElement('div', { className: "flex items-center gap-2" },
+                                React.createElement(Calendar, { size: 18, className: "text-blue-500" }),
+                                React.createElement('h2', { className: "text-lg font-bold text-white" }, "時間表")
+                            ),
+                            React.createElement('div', { className: "text-sm text-slate-400 flex items-center gap-1" }, 
+                                React.createElement(Code, { size: 12 }), "下一輪時間"
+                            )
+                        ),
+                        
+                        // 列表渲染迴圈
+                        React.createElement('div', { className: "divide-y divide-slate-700/50" },
+                            scheduleData.map((prog, index) => {
+                                const isLive = index === currentIndex;
+                                const isPast = index < currentIndex;
+                                
+                                // 時間字串拆解
+                                const timeParts = prog.time.split(' ');
+                                const datePart = timeParts.length > 1 ? timeParts.slice(0, -1).join(' ') : '';
+                                const timePart = timeParts.slice(-1)[0];
+                                
+                                return React.createElement('div', { 
+                                    key: index, 
+                                    // [重點樣式] 若為 Live，套用醒目紅色背景、邊框、陰影與微幅放大效果
+                                    className: `p-4 transition-all duration-300 ${
+                                        isLive 
+                                        ? 'bg-red-900/30 border border-red-500/50 shadow-[0_0_15px_rgba(239,68,68,0.2)] rounded-lg my-2 relative z-10 transform scale-[1.02]' 
+                                        : (isPast ? 'opacity-50 hover:opacity-75' : 'hover:bg-slate-800/50')
+                                    }` 
+                                },
+                                    // Row 1: 時間(放大) + 狀態 | (靠右) 下一輪時間
+                                    React.createElement('div', { className: "flex justify-between items-center mb-2" },
+                                        // 左側: 日期 + 時間 + 狀態
+                                        React.createElement('div', { className: "flex items-baseline gap-2" },
+                                            // 日期 (小字)
+                                            datePart && React.createElement('span', { className: `text-base font-mono sm:inline ${isLive ? 'text-red-200' : 'text-slate-400'}` }, datePart),
+                                            
+                                            // 時間 (放大顯示)
+                                            React.createElement('span', { className: `text-xl font-mono font-black tracking-tight ${isLive ? 'text-red-400' : 'text-slate-300'}` }, timePart),
+                                            
+                                            // 狀態標籤 (Live / 已播畢)
+                                            isLive && React.createElement('span', { className: "ml-1 flex items-center gap-1 bg-red-600 text-white text-[10px] font-bold px-2 py-0.5 rounded-full shadow-md animate-pulse translate-y-[-5px]" },
+                                                React.createElement('div', { className: "w-1.5 h-1.5 bg-white rounded-full" }), "LIVE"
+                                            ),
+                                            isPast && React.createElement('span', { className: "ml-1 flex items-center gap-1 text-slate-500 text-[10px] font-bold translate-y-[-2px]" },
+                                                React.createElement(CheckCircle, { size: 10 }), "已播畢"
+                                            )
+                                        ),
+
+                                        // 右側: 下一輪時間
+                                        prog.next_time && React.createElement('div', { className: "text-base text-slate-400 flex items-center gap-1" },
+                                            React.createElement(RotateCw, { size: 12 }), 
+                                            prog.next_time
+                                        )
+                                    ),
+                                    
+                                    // Row 2: 集數 + 標題
+                                    React.createElement('div', { className: "flex items-center gap-3 mb-1" },
+                                        React.createElement('span', { className: "text-base font-bold text-slate-200 bg-slate-800/80 px-2 py-1 rounded border border-slate-700 whitespace-nowrap" }, prog.ep),
+                                        React.createElement('h3', { className: `font-bold text-lg leading-tight ${isLive ? 'text-white drop-shadow-md' : 'text-slate-200'}` }, 
+                                            prog.title
+                                        )
+                                    ),
+
+                                    // Row 3: 節目說明
+                                    React.createElement('p', { className: `text-base leading-relaxed pl-[0.75rem] ${isLive ? 'text-slate-200' : 'text-slate-400'}` }, 
+                                        prog.desc
+                                    )
+                                );
+                            })
+                        )
+                    ),
+                    
+                    // --- [區塊 6] 頁尾 (Footer) ---
+                    React.createElement('footer', { className: "text-center font-medium text-slate-400 text-lg py-8 border-t border-slate-800" },
+                        React.createElement('p', null, "作者 : extremevs")
+                    )
+                )
+            );
+        };
+
+        const root = createRoot(document.getElementById('root'));
+        root.render(React.createElement(ProgramSchedule));
+    </script>
+</body>
+</html>
