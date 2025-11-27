@@ -217,7 +217,7 @@
                         ),
                         // 右側：日期與時間 (text-xl 控制字體大小)
                         React.createElement('div', { className: "flex flex-col items-end sm:flex-row sm:items-center sm:space-x-3 bg-slate-900/50 px-3 py-1.5 rounded-lg border border-slate-600/50" },
-                            React.createElement('span', { className: "text-xl text-white-400 font-mono" }, formatDateHeader(currentTime)),
+                            React.createElement('span', { className: "text-lg text-white-400 font-mono" }, formatDateHeader(currentTime)),
                             React.createElement('div', { className: "flex items-center space-x-2" },
                                 React.createElement(Clock, { size: 16, className: "text-blue-300" }),
                                 React.createElement('span', { className: "font-mono text-xl font-bold text-blue-100 tabular-nums" }, formatTimeHeader(currentTime))
@@ -492,4 +492,5 @@
 </body>
 
 </html>
+
 
