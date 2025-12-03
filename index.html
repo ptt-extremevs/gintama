@@ -193,7 +193,7 @@
         /* Media Queries */
         @media (max-width: 768px) {
             :root { --container-padding: 1rem; }
-            .clock-date { font-size: 0.75rem; } .clock-time { font-size: 1rem; }
+            .clock-date { font-size: 0.9rem; } .clock-time { font-size: 1rem; }
 
             .upcoming-card { display: block; position: relative; padding-top: 1rem; }
             .upcoming-time-val { position: absolute; top: 1rem; right: 0.9rem; flex-direction: row; align-items: baseline; gap: 6px; }
@@ -215,8 +215,8 @@
             }
             .slim-card.is-playing .col-next { padding-top: 1.5rem; }
             .next-label { display: block; font-size: 0.6rem; margin-bottom: 1px; }
-            .next-val-date { display: block; font-size: 0.7rem; line-height: 1; white-space: nowrap; }
-            .next-val-time { display: block; font-size: 0.9rem; font-weight: 700; line-height: 1; }
+            .next-val-date { display: block; font-size: 0.75rem; line-height: 1; white-space: nowrap; }
+            .next-val-time { display: block; font-size: 1rem; font-weight: 700; line-height: 1; }
             
             .list-controls-row { flex-direction: column; gap: 0.8rem; }
             .search-container { order: 1; }
@@ -319,7 +319,7 @@
         const CONFIG = {
             // [CRITICAL] REPLACE THIS URL WITH YOUR DEPLOYED WEB APP URL
             // Ensure the URL ends with '/exec'
-            SCRIPT_URL: 'https://script.google.com/macros/s/AKfycbzmFPoUAK_S-xbveENdpId8ulAJcpljyIa-whyDQx4ljk25PcrmiQo2EbVu5nIQAYC0vg/exec', 
+            SCRIPT_URL: 'https://script.google.com/macros/s/AKfycbzVnG-XtXLz_bFiiHGgUhn7qpbxAXyLMjUubHafoiu5LV2Xgy-ZfKGrTLaVa5Ojw0-h/exec', 
             
             PAGINATION_RANGES: [
                 { start: 1, end: 49 }, { start: 50, end: 99 }, { start: 100, end: 150 },
@@ -331,7 +331,7 @@
                 { text: "🔗 完整時間表", url: "https://docs.google.com/spreadsheets/d/1EkbUExn62tz82eQ5OHu1UAJ6jmtCSUh1C6cWrwV6y7M/edit?usp=sharing" },
                 { text: "🔗 作者 Threads", url: "https://www.threads.com/@ptt_extremevs?hl=zh-tw" }
             ],
-            REFRESH_INTERVAL: 3660000 // 3660 seconds
+            REFRESH_INTERVAL: 1500000 // 1500 seconds
         };
 
         let scheduleData = [];
@@ -657,7 +657,7 @@
                      if(partsNext.length === 1) { datePart = item.displayNext; timePart = ''; }
                      
                      nextInfoHtml = `
-                        <span class="next-label">下一輪</span>
+                        <span class="next-label">下一輪時間</span>
                         <span class="next-val-date">${datePart}</span>
                         <span class="next-val-time">${timePart}</span>
                      `;
