@@ -30,7 +30,7 @@
 
             --text-primary: #EEEEEE;
             --text-secondary: #b0b0b0;
-            --text-accent: #82B1FF;
+            --text-accent: #B6D0FF;
             --bg-accent-dark: #26323F;
 
             --container-padding: 2rem;
@@ -108,20 +108,23 @@
         .upcoming-info-col { min-width: 0; padding-right: 130px; }
         .upcoming-header { display: flex; align-items: center; gap: 8px; margin-top: 4px; width: 100%;}
         .upcoming-label { font-size: 0.8rem; font-weight: 500; text-transform: uppercase; color: #bbbbbb; letter-spacing: 1px; }
-        .upcoming-ep-tag { font-size: clamp(0.8rem, 3vw, 1.1rem); font-weight: 700; padding: 2px 6px; border-radius: 4px; color: var(--text-accent); background-color: var(--bg-accent-dark); white-space: nowrap; }
-        
-        .upcoming-title {
-            font-weight: 700; font-size: clamp(0.9rem, 3vw, 1.2rem); color: var(--text-primary);
-            white-space: nowrap; text-overflow: ellipsis; line-height: 1.3; flex-grow: 1; overflow: hidden;
+        .upcoming-ep-tag { font-size: clamp(0.8rem, 3vw, 1.1rem); font-weight: 700; padding: 2px 6px; border-radius: 4px; 
+            color: var(--text-accent); background-color: var(--bg-accent-dark); white-space: nowrap; 
         }
-        .upcoming-subtitle { font-size: clamp(0.9rem, 3vw, 1rem); margin-top: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: var(--text-primary); font-weight: 300; margin-left: 9px; }
+        .upcoming-title {
+            font-weight: 700; font-size: clamp(0.9rem, 3vw, 1.1rem); color: var(--text-primary);
+            white-space: nowrap; text-overflow: ellipsis; line-height: 1.3; flex-grow: 1;
+        }
+        .upcoming-subtitle { font-size: clamp(0.9rem, 3vw, 1rem); margin-top: 4px; white-space: nowrap; 
+            overflow: hidden; text-overflow: ellipsis; color: var(--text-primary); font-weight: 300; margin-left: 9px; 
+        }
         
         .upcoming-time-val { 
             font-family: var(--font-mono); color: var(--text-primary); text-align: right; 
             position: absolute; top: 1rem; right: 1rem;
             display: flex; flex-direction: row; align-items: baseline; gap: 8px; line-height: 1.2;
         }
-        .up-val-date { font-size: 0.9rem; opacity: 0.8; font-family: var(--font-main); }
+        .up-val-date { font-size: 0.85rem; opacity: 0.8; font-family: var(--font-main); }
         .up-val-time { font-size: 1.4rem; font-weight: 700; }
 
         /* Controls */
@@ -199,7 +202,7 @@
             .upcoming-time-val { position: absolute; top: 1rem; right: 0.9rem; flex-direction: row; align-items: baseline; gap: 6px; }
             .upcoming-info-col { padding-right: 0; }
             .upcoming-title, .upcoming-subtitle { white-space: normal; }
-            .up-val-date { font-size: 0.75rem; } .up-val-time { font-size: 1.1rem; }
+            .up-val-date { font-size: 0.75rem; } .up-val-time { font-size: 1.3rem; }
 
             .slim-card { grid-template-columns: 1fr 85px; gap: 8px; padding: 12px 10px; align-items: flex-start; }
             .col-time { display: none; }
@@ -214,8 +217,8 @@
                 text-align: right; justify-content: flex-start; border-top: none; margin-top: 0; height: 100%;
             }
             .slim-card.is-playing .col-next { padding-top: 1.5rem; }
-            .next-label { display: block; font-size: 0.6rem; margin-bottom: 1px; }
-            .next-val-date { display: block; font-size: 0.75rem; line-height: 1; white-space: nowrap; }
+            .next-label { display: block; font-size: 0.65rem; margin-bottom: 1px; }
+            .next-val-date { display: block; font-size: 0.8rem; line-height: 1; white-space: nowrap; }
             .next-val-time { display: block; font-size: 1rem; font-weight: 700; line-height: 1; }
             
             .list-controls-row { flex-direction: column; gap: 0.8rem; }
@@ -319,7 +322,7 @@
         const CONFIG = {
             // [CRITICAL] REPLACE THIS URL WITH YOUR DEPLOYED WEB APP URL
             // Ensure the URL ends with '/exec'
-            SCRIPT_URL: 'https://script.google.com/macros/s/AKfycbzVnG-XtXLz_bFiiHGgUhn7qpbxAXyLMjUubHafoiu5LV2Xgy-ZfKGrTLaVa5Ojw0-h/exec', 
+            SCRIPT_URL: '//https://script.google.com/macros/s/AKfycbzVnG-XtXLz_bFiiHGgUhn7qpbxAXyLMjUubHafoiu5LV2Xgy-ZfKGrTLaVa5Ojw0-h/exec', 
             
             PAGINATION_RANGES: [
                 { start: 1, end: 49 }, { start: 50, end: 99 }, { start: 100, end: 150 },
@@ -516,8 +519,8 @@
                 const nextT = new Date(t.getTime() + 604800000); // +1 week for next round loop
                 rows.push([
                     `第${i}話`, 
-                    `Mock Title ${i}`, 
-                    `Subtitle for ep ${i}`, 
+                    `測試標題測試${i} + 標題測試標題${i}`, 
+                    `這裡是副標題${i} + 這裡是副標題${i}`, 
                     fmt(t), 
                     fmt(nextT)
                 ]);
