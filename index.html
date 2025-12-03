@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>銀魂時間表 by extremevs</title>
+    <title>銀魂馬拉松時間表</title>
     
     <style>
         /* =========================================
@@ -19,19 +19,19 @@
             --card-bg: #1e1e1e;
             --border-color: #333333;
             
-            --active-red: #ff5252d2;
-            --active-bg: rgba(238, 70, 70, 0.212); 
-            --highlight-fill: rgba(65, 122, 245, 0.11); 
+            --active-red: #ff5252d2; /* 播放中/活躍色 (半透明紅) */
+            --active-bg: rgba(238, 70, 70, 0.212); /* 播放中卡片背景 */
+            --highlight-fill: rgba(65, 122, 245, 0.11); /* 即將播放卡片背景 */
 
             --nav-btn-bg: #2c2c2c;
             --nav-btn-text: #F0F6FC;
             --nav-btn-hover: #B6D0FF;
             --nav-btn-hover-text: #000;
 
-            --text-primary: #EEEEEE;
-            --text-secondary: #b0b0b0;
-            --text-accent: #EEEEEE;
-            --bg-accent-dark: #23384e;
+            --text-primary: #EEEEEE; /* 主要文字色 */
+            --text-secondary: #b0b0b0; /* 次要文字色 */
+            --text-accent: #EEEEEE; /* 強調文字色 */
+            --bg-accent-dark: #23384e; /* 強調背景色 (集數標籤) */
 
             --container-padding: 2rem;
             --border-radius: 12px;
@@ -56,9 +56,9 @@
         /* Header */
         header {
             background-color: var(--card-bg); border-bottom: 1px solid var(--border-color);
-            padding: 0.5rem var(--container-padding); position: sticky; top: 0; z-index: 1000;
+            padding: 0.4rem var(--container-padding); position: sticky; top: 0; z-index: 1000;
             display: flex; justify-content: space-between; align-items: center;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.3); min-height: 60px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.3); min-height: 40px;
         }
         
         .brand-container { display: flex; flex-direction: column; align-items: flex-end; justify-content: center; }
@@ -100,7 +100,7 @@
         .np-progress-info { display: flex; justify-content: space-between; font-family: var(--font-mono); font-size: 0.8rem; margin-top: 6px; color: var(--text-secondary); }
 
         /* =========================================
-           Section: Upcoming (Cleaned Layout)
+           Section: Upcoming (三層結構)
            ========================================= */
         .upcoming-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1rem; margin-bottom: 1.5rem; }
         
@@ -108,15 +108,15 @@
             background-color: var(--highlight-fill); 
             padding: 1rem; 
             border-radius: var(--border-radius); 
-            display: flex; /* 使用 Flex Column 建立三層結構 */
+            display: flex; 
             flex-direction: column;
-            gap: 6px; /* 層與層之間的間距 */
+            gap: 10px; /* 層與層之間的間距 */
         }
 
         /* --- Layer 1: Meta Info (Label/Tag + Time) --- */
         .upcoming-head-row {
             display: flex;
-            justify-content: space-between; /* 左右推開 */
+            justify-content: space-between; 
             align-items: center;
             width: 100%;
         }
@@ -124,12 +124,11 @@
         .upcoming-left-group {
             display: flex;
             align-items: center;
-            gap: 10px; /* Label 與 EP Tag 的間距 */
+            gap: 10px; 
         }
 
         .upcoming-label { 
             font-size: 0.9rem; font-weight: 500; text-transform: uppercase; color: #bbbbbb; letter-spacing: 1px;
-            /* No margins, no positioning */
         }
 
         .upcoming-ep-tag { 
@@ -137,14 +136,12 @@
             padding: 2px 6px; border-radius: 4px; 
             color: var(--text-accent); background-color: var(--bg-accent-dark); 
             white-space: nowrap; 
-            /* No margins, no positioning */
         }
         
         /* Time Group (Right Side) */
         .upcoming-time-val { 
             font-family: var(--font-mono); color: var(--text-primary); text-align: right; 
             display: flex; align-items: baseline; gap: 8px; line-height: 1;
-            /* Removed absolute positioning */
         }
         .up-val-date { font-size: 0.9rem; opacity: 0.5; font-family: var(--font-main); }
         .up-val-time { font-size: 1.4rem; font-weight: 700; }
@@ -154,7 +151,6 @@
             font-weight: 500; font-size: clamp(1rem, 3vw, 1.2rem); color: var(--text-primary);
             line-height: 1.3;
             width: 100%;
-            /* 允許標題換行，避免被截斷，符合多行顯示需求 */
             word-break: break-word; 
         }
 
@@ -162,7 +158,6 @@
         .upcoming-subtitle { 
             font-size: clamp(0.9rem, 3vw, 1.1rem); 
             color: var(--text-primary); font-weight: 300; 
-            margin-top: 0;
             opacity: 0.9;
             word-break: break-word;
         }
@@ -191,86 +186,108 @@
         .btn-current:hover { background-color: var(--active-bg); }
 
         /* Schedule List */
-        .schedule-list-container { display: flex; flex-direction: column; gap: 0.5rem; }
-        .slim-card {
-            background-color: var(--card-bg); border: 1px solid var(--border-color);
-            border-radius: var(--border-radius); padding: 1rem;
-            display: grid; grid-template-columns: 1fr 160px;
-            align-items: center; gap: 1.5rem; position: relative; overflow: hidden;
-        }
-        .slim-card:hover { background-color: #252525; border-color: #555; }
+    .schedule-list-container { display: flex; flex-direction: column; gap: 0.5rem; }
+    
+    .slim-card {
+        background-color: var(--card-bg); border: 1px solid var(--border-color);
+        border-radius: var(--border-radius); padding: 1rem;
+        display: grid; grid-template-columns: 1fr 160px;
+        align-items: center; gap: 1.5rem; position: relative; overflow: hidden;
+    }
+    .slim-card:hover { background-color: #252525; border-color: #555; }
+    
+    .slim-card.is-playing { 
+        background-color: var(--active-bg); border: 1px solid var(--active-red); 
+        box-shadow: 0 4px 12px rgba(255, 82, 82, 0.15); 
+        /* === 電腦版跳動/位移：保留 (2rem) === */
+        padding-top: 2rem; 
+    }
+    
+    .playing-ribbon { 
+        position: absolute; top: 0; right: 0; 
+        background-color: var(--active-red); 
+        color: #F0F6FC; /* 使用系統導航白色 */
+        font-size: 0.9rem; 
+        font-weight: 500; 
+        padding: 4px 10px; 
+        border-bottom-left-radius: 8px; 
+        pointer-events: none; 
+    }
+
+    .col-time { display: none !important; }
+
+    .col-main { 
+        display: grid; grid-template-columns: auto 1fr; 
+        row-gap: 2px; column-gap: 10px; overflow: hidden; min-width: 0; align-items: baseline;
+    }
+
+    .list-date-part, .list-time-part, .sub-title-label { grid-column: 1 / 2; white-space: nowrap; }
+    .list-date-part { font-size: 1rem; font-weight: 500; color: var(--text-primary); }
+    .list-time-part { font-family: var(--font-mono); font-size: 1.6rem; font-weight: 700; color: var(--text-primary); }
+    .sub-title-label { font-size: 0.85rem; color: var(--text-primary); font-weight: 300; }
+
+    .ep-tag, .main-title, .sub-title { grid-column: 2 / 3; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .ep-tag { font-size: 1rem; font-weight: 500; padding: 2px 8px; border-radius: 4px; display: inline-block; color: var(--text-accent); background-color: var(--bg-accent-dark); justify-self: start; }
+    .main-title { font-size: 1rem; font-weight: 500; color: var(--text-primary); }
+    .sub-title { font-size: 0.9rem; color: var(--text-primary); font-weight: 300; }
+
+    .col-next { 
+        border-left: 1px solid #333; padding-left: 1rem; text-align: right; 
+        display: grid; grid-template-rows: auto auto auto; 
+        justify-items: end; align-content: center; gap: 4px; 
+    }
+    
+    .slim-card.is-playing .col-next { 
+        /* 抵銷 padding-top: 2rem; 影響，讓右側內容置中 */
+        padding-top: 1rem; 
+    }
+
+    .next-label { font-size: 0.9rem; opacity: 0.5; text-transform: uppercase; color: var(--text-secondary); letter-spacing: 0.5px; display: block; line-height: 1.3; }
+    .next-val, .next-val-date, .next-val-time { font-family: var(--font-mono); color: var(--text-secondary); display: block; line-height: 1.3; }
+    .next-val-date { font-size: 1rem; } 
+    .next-val-time { font-size: 1.2rem; font-weight: 700; }
+    .mobile-time-inline { display: none !important; }
+
+    /* Media Queries */
+    @media (max-width: 768px) {
+        :root { --container-padding: 1rem; }
+        .upcoming-card { padding-top: 1rem; } 
+        
+        .upcoming-label { font-size: 0.8rem;}
+        .up-val-date { font-size: 0.8rem; opacity: 0.5;} 
+        .up-val-time { font-size: 1.2rem; }
+        
+        .slim-card { grid-template-columns: 1fr 85px; gap: 8px; padding: 12px 10px; align-items: flex-start; }
+        
         .slim-card.is-playing { 
-            background-color: var(--active-bg); border: 1px solid var(--active-red); 
-            box-shadow: 0 4px 12px rgba(255, 82, 82, 0.15); padding-top: 2rem;
-        }
-        .playing-ribbon { position: absolute; top: 0; right: 0; background-color: var(--active-red); color: #F8F8F8; font-size: 0.9rem; font-weight: 500; padding: 4px 10px; border-bottom-left-radius: 8px; pointer-events: none; }
 
-        .col-time { display: none !important; }
-
-        .col-main { 
-            display: grid; grid-template-columns: auto 1fr; 
-            row-gap: 2px; column-gap: 10px; overflow: hidden; min-width: 0; align-items: baseline;
+            padding-top: 2rem; 
         }
 
-        .list-date-part, .list-time-part, .sub-title-label { grid-column: 1 / 2; white-space: nowrap; }
-        .list-date-part { font-size: 1rem; font-weight: 500; color: var(--text-primary); }
-        .list-time-part { font-family: var(--font-mono); font-size: 1.6rem; font-weight: 700; color: var(--text-primary); }
-        .sub-title-label { font-size: 0.85rem; color: var(--text-primary); font-weight: 300; }
-
-        .ep-tag, .main-title, .sub-title { grid-column: 2 / 3; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-        .ep-tag { font-size: 1rem; font-weight: 500; padding: 2px 8px; border-radius: 4px; display: inline-block; color: var(--text-accent); background-color: var(--bg-accent-dark); justify-self: start; }
-        .main-title { font-size: 1rem; font-weight: 500; color: var(--text-primary); }
-        .sub-title { font-size: 0.9rem; color: var(--text-primary); font-weight: 300; }
+        .col-time { display: none; }
+        .list-date-part { font-size: 0.8rem;}
+        .list-time-part { font-size: 1.3rem;}
+        .ep-tag { font-size: 0.9rem; padding: 1px 6px; }
+        .main-title { width: 100%; white-space: normal; line-height: 1.3; font-size: 0.9rem; margin-top: 4px; }
+        .sub-title { white-space: normal; font-size: 0.8rem; margin-left: 0; margin-top: 2px; text-align: left; color: var(--text-primary); }
 
         .col-next { 
-            border-left: 1px solid #333; padding-left: 1rem; text-align: right; 
-            display: grid; grid-template-rows: auto auto auto; 
-            justify-items: end; align-content: center; gap: 4px; 
-        }
-        .slim-card.is-playing .col-next { padding-top: 0rem; }
-
-        .next-label { font-size: 0.9rem; opacity: 0.5; text-transform: uppercase; color: var(--text-secondary); letter-spacing: 0.5px; display: block; line-height: 1.3; }
-        .next-val, .next-val-date, .next-val-time { font-family: var(--font-mono); color: var(--text-secondary); display: block; line-height: 1.3; }
-        .next-val-date { font-size: 1rem; } 
-        .next-val-time { font-size: 1.2rem; font-weight: 700; }
-        .mobile-time-inline { display: none !important; }
-
-        /* Media Queries */
-        @media (max-width: 768px) {
-            :root { --container-padding: 1rem; }
-            .clock-date { font-size: 1rem; } .clock-time { font-size: 1.1rem; }
-
-            /* Mobile 樣式簡化：移除不必要的 override，因為預設樣式已經是通用的 Flex Column */
-            .upcoming-card { padding-top: 1rem; } 
-            
-            /* 確保手機版文字不會太小 */
-            .upcoming-label { font-size: 0.8rem;}
-            .up-val-date { font-size: 0.8rem; opacity: 0.5;} 
-            .up-val-time { font-size: 1.2rem; }
-            
-            /*完整時間表 */
-            .slim-card { grid-template-columns: 1fr 85px; gap: 8px; padding: 12px 10px; align-items: flex-start; }
-            .col-time { display: none; }
-            .list-date-part { font-size: 0.8rem;}
-            .list-time-part { font-size: 1.3rem;}
-            .ep-tag { font-size: 0.9rem; padding: 1px 6px; }
-            .main-title { width: 100%; white-space: normal; line-height: 1.3; font-size: 0.9rem; margin-top: 4px; }
-            .sub-title { white-space: normal; font-size: 0.8rem; margin-left: 0; margin-top: 2px; text-align: left; color: var(--text-primary); }
-
-            .col-next { 
-                border-left: 1px solid #333; padding-left: 8px; align-items: flex-end; 
-                text-align: right; justify-content: flex-start; border-top: none; margin-top: 0; height: 100%;
-            }
-            .slim-card.is-playing .col-next { padding-top: 1.5rem; }
-            .next-label { display: block; font-size: 0.65rem; margin-bottom: 1px; }
-            .next-val-date { display: block; font-size: 0.75rem; line-height: 1; white-space: nowrap; }
-            .next-val-time { display: block; font-size: 1.1rem; font-weight: 700; line-height: 1; }
-            
-            .list-controls-row { flex-direction: column; gap: 0.8rem; }
-            .search-container { order: 1; }
-            .pagination-container { order: 2; width: 100%; min-width: 0; }
+            border-left: 1px solid #333; padding-left: 8px; align-items: flex-end; 
+            text-align: right; justify-content: flex-start; border-top: none; margin-top: 0; height: 100%;
         }
 
+        .slim-card.is-playing .col-next { 
+            padding-top: 0rem; 
+        }
+
+        .next-label { display: block; font-size: 0.7rem; margin-bottom: 1px; }
+        .next-val-date { display: block; font-size: 0.75rem; line-height: 1; white-space: nowrap; }
+        .next-val-time { display: block; font-size: 1.1rem; font-weight: 700; line-height: 1; }
+        
+        .list-controls-row { flex-direction: column; gap: 0.8rem; }
+        .search-container { order: 1; }
+        .pagination-container { order: 2; width: 100%; min-width: 0; }
+    }
         /* Back to Top */
         .btn-back-to-top {
             position: fixed; bottom: 30px; right: 30px; width: 50px; height: 50px;
@@ -373,7 +390,7 @@
         const CONFIG = {
             // [CRITICAL] REPLACE THIS URL WITH YOUR DEPLOYED WEB APP URL
             // Ensure the URL ends with '/exec'
-            SCRIPT_URL: '//https://script.google.com/macros/s/AKfycbzVnG-XtXLz_bFiiHGgUhn7qpbxAXyLMjUubHafoiu5LV2Xgy-ZfKGrTLaVa5Ojw0-h/exec', 
+            SCRIPT_URL: 'https://script.google.com/macros/s/AKfycbzVnG-XtXLz_bFiiHGgUhn7qpbxAXyLMjUubHafoiu5LV2Xgy-ZfKGrTLaVa5Ojw0-h/exec', 
             
             PAGINATION_RANGES: [
                 { start: 1, end: 49 }, { start: 50, end: 99 }, { start: 100, end: 150 },
@@ -381,7 +398,7 @@
                 { start: 266, end: 316 }, { start: 317, end: 367 }
             ],
             NAV_LINKS: [
-                { text: "🔗 馬拉松直播", url: "https://www.youtube.com" },
+                { text: "🔗 銀魂馬拉松直播", url: "https://www.youtube.com" },  //YT直播連結
                 { text: "🔗 完整時間表", url: "https://docs.google.com/spreadsheets/d/1EkbUExn62tz82eQ5OHu1UAJ6jmtCSUh1C6cWrwV6y7M/edit?usp=sharing" },
                 { text: "🔗 作者 Threads", url: "https://www.threads.com/@ptt_extremevs?hl=zh-tw" }
             ],
@@ -552,7 +569,7 @@
             const fmt = d => `${String(d.getMonth()+1).padStart(2,'0')}/${String(d.getDate()).padStart(2,'0')} 週${['日','一','二','三','四','五','六'][d.getDay()]} ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;
             const rows = [];
             for(let i=1; i<=367; i++) {
-                const offsetHours = (i - 200) * 0.01; 
+                const offsetHours = (i - 200) * 0.02; 
                 const t = new Date(now.getTime() + offsetHours * 60 * 60 * 1000);
                 const nextT = new Date(t.getTime() + 604800000); 
                 rows.push([
@@ -671,6 +688,7 @@
                     if(parts.length >= 2) {
                         const timePart = parts.pop();
                         const datePart = parts.join(' ');
+                        // JS 注入 Layer 1 的時間結構
                         els.time.innerHTML = `<span class="up-val-date">${datePart}</span><span class="up-val-time">${timePart}</span>`;
                     } else {
                         els.time.textContent = item.displayStart;
@@ -700,6 +718,7 @@
                 const card = document.createElement('div');
                 card.className = `slim-card ${isPlaying ? 'is-playing' : ''}`;
                 
+                // 使用 ● LIVE 標籤
                 let ribbon = isPlaying ? `<div class="playing-ribbon">● LIVE</div>` : '';
                 
                 const partsNext = item.displayNext ? item.displayNext.split(' ') : [];
