@@ -510,7 +510,7 @@
         function loadMockData() {
             const now = new Date();
             // Mock Data Generator
-            const fmt = d => `${String(d.getMonth()+1).padStart(2,'0')}/${String(d.getDate()).padStart(2,'0')} (週${['日','一','二','三','四','五','六'][d.getDay()]}) ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;
+            const fmt = d => `${String(d.getMonth()+1).padStart(2,'0')}/${String(d.getDate()).padStart(2,'0')} 週${['日','一','二','三','四','五','六'][d.getDay()]} ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;
             const rows = [];
             for(let i=1; i<=367; i++) {
                 // Generate schedule around current time
