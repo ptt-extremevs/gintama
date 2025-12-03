@@ -131,7 +131,7 @@
         .nav-btn {
             flex: 1; min-width: 120px; background-color: var(--nav-btn-bg); color: var(--nav-btn-text);
             text-decoration: none; padding: 12px; border-radius: 8px; text-align: center;
-            font-weight: 500; font-size: 0.95rem; border: 1px solid var(--border-color);
+            font-weight: 500; font-size: clamp(0.8rem, 3vw, 1rem); border: 1px solid var(--border-color);
             transition: all 0.2s ease; display: flex; align-items: center; justify-content: center;
             letter-spacing: 0.5px;
         }
@@ -144,10 +144,10 @@
             text-align: center; box-shadow: 0 4px 20px rgba(0,0,0,0.4);
             display: flex; flex-direction: column; gap: 0.75rem; align-items: center;
         }
-        .np-layer-time { font-family: var(--font-mono); font-size: 1.5rem; font-weight: 600; color: var(--np-time-color); letter-spacing: 1px; }
+        .np-layer-time { font-family: var(--font-mono); font-size: clamp(1.2rem, 5vw, 1.6rem); font-weight: 600; color: var(--np-time-color); letter-spacing: 1px; }
         .np-layer-main { display: flex; align-items: center; justify-content: center; gap: 12px; flex-wrap: wrap; }
-        .np-ep-tag { font-size: 1.3rem; font-weight: 700; padding: 4px 10px; border-radius: 6px; color: var(--np-ep-text); background-color: var(--np-ep-bg); letter-spacing: 0.5px; }
-        .np-title { font-size: clamp(1.5rem, 5vw, 1.8rem); font-weight: 700; line-height: 1.2; margin: 0; color: var(--np-title); }
+        .np-ep-tag { font-size: clamp(0.9rem, 3vw, 1.5rem); font-weight: 700; padding: 4px  8px; border-radius: 6px; color: var(--np-ep-text); background-color: var(--np-ep-bg); letter-spacing: 0.5px; }
+        .np-title { font-size: clamp(1rem, 3vw, 1.5rem); font-weight: 700; line-height: 1.2; margin: 0; color: var(--np-title); }
         .np-layer-sub { font-size: clamp(1rem, 3vw, 1.25rem); font-weight: 300; margin: 0; color: var(--np-subtitle); }
 
         /* [新增] 進度條樣式 */
@@ -168,18 +168,18 @@
         .upcoming-info-col { min-width: 0; padding-right: 130px; }
         
         .upcoming-header { display: flex; align-items: center; gap: 8px; margin-top: 4px; }
-        .upcoming-label { font-size: 0.9rem; font-weight: 500; text-transform: uppercase; color: var(--up-label); letter-spacing: 1px; }
-        .upcoming-ep-tag { font-size: 1rem; font-weight: 700; padding: 2px 8px; border-radius: 4px; color: var(--up-ep-text); background-color: var(--up-ep-bg); white-space: nowrap; }
+        .upcoming-label { font-size: 0.8rem; font-weight: 500; text-transform: uppercase; color: var(--up-label); letter-spacing: 1px; }
+        .upcoming-ep-tag { font-size: clamp(0.85rem, 3vw, 1.1rem); font-weight: 700; padding: 2px 8px; border-radius: 4px; color: var(--up-ep-text); background-color: var(--up-ep-bg); white-space: nowrap; }
         
         /* [修改] 允許標題自動換行，移除 max-width */
         .upcoming-title {
-            font-weight: 700; font-size: 1.1rem; color: var(--up-title);
+            font-weight: 700; font-size: clamp(0.9rem, 3vw, 1.2rem); color: var(--up-title);
             white-space: normal; line-height: 1.3;
         }
         
         .upcoming-subtitle { font-size: 0.9rem; margin-top: 4px; 
             white-space: nowrap; overflow: hidden; text-overflow: ellipsis; 
-            color: var(--up-subtitle); font-weight: 300; margin-left: 12px; 
+            color: var(--up-subtitle); font-weight: 300; margin-left: 9px; 
         }
         
         /* [修改] 時間固定在右上角，單行顯示 */
@@ -191,13 +191,13 @@
             display: flex; flex-direction: row; align-items: baseline; gap: 8px;
             line-height: 1.2;
         }
-        .up-val-date { font-size: 0.9rem; opacity: 1; font-family: var(--font-main); }
-        .up-val-time { font-size: 1.2rem; font-weight: 700; }
+        .up-val-date { font-size: 0.9rem; opacity: 0.8; font-family: var(--font-main); }
+        .up-val-time { font-size: 1.4rem; font-weight: 700; }
 
         /* --- Controls --- */
-        .list-controls-row { display: flex; gap: 1rem; margin-bottom: 1rem; flex-wrap: wrap; align-items: stretch; }
+        .list-controls-row { display: flex; gap: 0.5rem; margin-bottom: 1rem; flex-wrap: wrap; align-items: stretch; }
         .search-container { flex: 1; min-width: 200px; }
-        #search-input { width: 100%; padding: 12px; font-size: 0.95rem; height: 100%; background-color: var(--card-bg); border: 1px solid var(--border-color); border-radius: 8px; appearance: none; color: var(--search-text); font-family: var(--font-main); }
+        #search-input { width: 100%; padding: 12px; font-size: 0.9rem; height: 100%; background-color: var(--card-bg); border: 1px solid var(--border-color); border-radius: 8px; appearance: none; color: var(--search-text); font-family: var(--font-main); }
         #search-input::placeholder { color: var(--search-placeholder); }
         #search-input:focus { outline: none; border-color: var(--header-site-name); }
         .pagination-container { flex: 1.5; min-width: 300px; display: flex; gap: 0.5rem; }
@@ -207,7 +207,11 @@
             background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
             background-repeat: no-repeat; background-position: right 1rem center; background-size: 1em; text-overflow: ellipsis; white-space: nowrap; overflow: hidden;
         }
-        .btn-current { height: 46px; padding: 0 16px; background-color: var(--card-bg); border: 1px solid var(--active-red); color: var(--active-red); border-radius: 8px; font-weight: bold; font-size: 0.9rem; cursor: pointer; white-space: nowrap; font-family: var(--font-main); }
+        .btn-current { 
+            height: 46px; padding: 0 10px; background-color: var(--card-bg); 
+            border: 1px solid var(--active-red); color: var(--active-red); 
+            border-radius: 8px; font-weight: bold; font-size: 0.9rem; cursor: pointer; 
+            white-space: nowrap; font-family: var(--font-main); }
         .btn-current:hover { background-color: var(--active-bg); }
 
         /* --- Schedule List --- */
@@ -215,52 +219,171 @@
         .slim-card {
             background-color: var(--card-bg); border: 1px solid var(--border-color);
             border-radius: var(--border-radius); padding: 1rem;
-            display: grid; grid-template-columns: 130px 1fr 160px; 
-            align-items: center; gap: 1.5rem; position: relative; overflow: hidden;
+            
+            /* [主要修改 1] 將 slim-card 自身設為 Grid，並定義三欄：日期/時間/標題 (1fr) + 集數標籤 (auto) + 下一輪資訊 (160px) */
+            /* 讓 col-time 和 col-next 失去作用，所有內容塞進 col-main */
+            display: grid; 
+            grid-template-columns: 1fr 160px; /* 內容區(日期/時間/標題/副標題) + 下一輪資訊 */
+            align-items: flex-start; 
+            gap: 1.5rem; 
+            position: relative; 
+            overflow: hidden;
         }
         .slim-card:hover { background-color: #252525; border-color: #555; }
         .slim-card.is-playing { background-color: var(--active-bg); border: 1px solid var(--active-red); box-shadow: 0 4px 12px rgba(255, 82, 82, 0.15); }
         .playing-ribbon { position: absolute; top: 0; right: 0; background-color: var(--active-red); color: #EEEEEE; font-size: 0.8rem; font-weight: 700; padding: 4px 10px; border-bottom-left-radius: 8px; pointer-events: none; }
-        .col-time { font-family: var(--font-mono); font-size: 1rem; font-weight: 500; white-space: nowrap; color: var(--list-time); }
-        .col-main { display: flex; flex-direction: column; gap: 4px; overflow: hidden; min-width: 0; }
-        .main-header { display: flex; align-items: center; gap: 10px; }
-        .ep-tag { font-size: 0.9rem; font-weight: 700; padding: 2px 8px; border-radius: 4px; white-space: nowrap; display: inline-block; color: var(--list-ep-text); background-color: var(--list-ep-bg); }
-        .main-title { font-size: 1rem; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: var(--list-title); }
-        .sub-title { font-size: 0.9rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: var(--list-subtitle); font-weight: 300; margin-left: 10px; }
-        .col-next { text-align: right; border-left: 1px solid #333; padding-left: 1rem; display: flex; flex-direction: column; justify-content: center; }
-        .next-label { font-size: 0.7rem; text-transform: uppercase; margin-bottom: 2px; color: var(--list-next-label); letter-spacing: 0.5px; }
-        
-        /* [修改] 統一使用 JetBrains Mono 並連結變數 */
+
+        /* [修改 2] 隱藏原本的 col-time 欄位 */
+        .col-time { display: none !important; }
+
+        /* [修改 3] col-main 重新定義為 Grid 容器，用於控制內部三層排版 */
+        .col-main { 
+            display: grid; 
+            /* 內容區內部 Grid 欄位：左側對齊參考點 (auto) + 內容 (1fr) */
+            grid-template-columns: auto 1fr; 
+            row-gap: 2px; /* 行間距 */
+            column-gap: 10px; /* 垂直對齊的間距 */
+            overflow: hidden; 
+            min-width: 0; 
+            align-items: baseline;
+        }
+
+        /* [新增 4] 每個資訊元素定位到 Grid 中 */
+
+        /* 左側對齊參考點 */
+        .list-date-part, .list-time-part, .sub-title-label {
+            grid-column: 1 / 2; /* 定位到第一欄 */
+            white-space: nowrap;
+        }
+        .list-date-part { font-size: 0.95rem; font-weight: 500; color: var(--list-time); }
+        .list-time-part { font-family: var(--font-mono); font-size: 1rem; font-weight: 700; color: var(--list-time); }
+        .sub-title-label { font-size: 0.85rem; color: var(--list-subtitle); font-weight: 300; } /* 僅用於對齊 */
+
+
+        /* 右側內容 (標題/集數) */
+        .ep-tag, .main-title, .sub-title {
+            grid-column: 2 / 3; /* 定位到第二欄，與左側對齊 */
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        .ep-tag { font-size: 0.9rem; font-weight: 700; padding: 2px 8px; border-radius: 4px; 
+            display: inline-block; color: var(--list-ep-text); background-color: var(--list-ep-bg);justify-self: start; }
+        .main-title { font-size: 1rem; font-weight: 700; color: var(--list-title); }
+        .sub-title { font-size: 0.9rem; color: var(--list-subtitle); font-weight: 300; }
+
+
+        /* [修改 5] col-next 調整為 Grid 容器，控制右側三層排版 */
+        .col-next { 
+            border-left: 1px solid #333; 
+            padding-left: 1rem; 
+            text-align: right; 
+            display: grid; 
+            grid-template-rows: auto auto auto; /* 確保三行垂直排列 */
+            justify-items: end; /* 讓內容靠右對齊 */
+            align-content: flex-start; /* 讓整體內容靠上 */
+            gap: 4px; /* 右側行間距 */
+        }
+        /* 當播放中時，讓出右上角給 Ribbon */
+        .slim-card.is-playing .col-next { padding-top: 1.8rem; }
+
+        /* 右側文字樣式 */
+        .next-label, .next-val-date, .next-val-time {
+            display: block;
+            line-height: 1.2;
+        }
+        .next-label { font-size: 0.7rem; text-transform: uppercase; color: var(--list-next-label); letter-spacing: 0.5px; }
         .next-val, .next-val-date, .next-val-time { font-family: var(--font-mono); color: var(--list-next-val); }
-        .next-val { font-size: 0.9rem; } 
         .next-val-date { font-size: 0.85rem; } 
-        .next-val-time { font-size: 0.9rem; font-weight: 700; }
-        
-        /* [修改] 當播放中時，讓出右上角給 Ribbon */
-        .slim-card.is-playing .col-next { padding-top: 1.8rem; justify-content: flex-start; }
+        .next-val-time { font-size: 1rem; font-weight: 700; }
+        .mobile-time-inline { display: none !important; }
 
         @media (max-width: 768px) {
             :root { --container-padding: 1rem; }
-            .clock-date { font-size: 0.9rem; } .clock-time { font-size: 1rem; }
+            .clock-date { font-size: 0.75rem; } .clock-time { font-size: 1rem; }
 
+            /* Header & Upcoming Mobile Styles */
             .upcoming-card { display: block; position: relative; padding-top: 1rem; }
-            /* Mobile Time Position */
             .upcoming-time-val { position: absolute; top: 1rem; right: 0.9rem; flex-direction: row; align-items: baseline; gap: 6px; }
             .upcoming-info-col { padding-right: 0; }
             .upcoming-title, .upcoming-subtitle { white-space: normal; }
-            .up-val-date { font-size: 0.9rem; } .up-val-time { font-size: 1.2rem; }
-            /* 下方時間表*/
-            .slim-card { grid-template-columns: 85px 1fr 85px; gap: 8px; padding: 12px 10px; align-items: flex-start; }
-            .main-header { flex-wrap: wrap; gap: 6px; }
-            .main-title { white-space: normal; line-height: 1.3; font-size: 0.9rem; }
-            .sub-title { white-space: normal; font-size: 0.9rem; margin-left: 4px; margin-top: 2px; }
-            .col-time { white-space: normal; line-height: 1.4; font-size: 0.8rem; display: flex; flex-direction: column; }
-            .col-next { border-left: 1px solid #333; padding-left: 8px; align-items: flex-end; text-align: right; justify-content: flex-start; border-top: none; margin-top: 0; }
-            /* Mobile Ribbon padding adjustment */
+            .up-val-date { font-size: 0.7rem; } .up-val-time { font-size: 1rem; }
+
+            /* =========================================
+               [修改] 下方時間表手機版佈局 (三層結構)
+               ========================================= */
+            
+            /* 1. Grid 改為兩欄：(內容區 1fr) + (右側 85px) */
+            .slim-card { 
+                grid-template-columns: 1fr 85px; 
+                gap: 8px; padding: 12px 10px; align-items: flex-start; 
+            }
+
+            /* 2. 隱藏原本左側的時間欄位 */
+            .col-time { display: none; }
+
+            /* 3. 顯示嵌入的時間，並設定樣式 */
+            .mobile-time-inline {
+                display: inline-block;
+                font-family: var(--font-mono);
+                color: var(--list-time);
+                font-size: 0.95rem;
+                margin-right: 8px;
+                font-weight: 500;
+            }
+
+            /* 4. 調整 Header 佈局，允許換行 (Wrap) */
+            .main-header { 
+                display: flex; 
+                flex-wrap: wrap;       /* 關鍵：允許換行 */
+                align-items: center; 
+                gap: 4px;              /* 元素間距 */
+            }
+
+            /* 5. 調整集數標籤樣式 (第一層右側) */
+            .ep-tag { 
+                font-size: 0.9rem; 
+                padding: 1px 6px; 
+            }
+
+            /* 6. 強制標題換行變成第二層 */
+            .main-title { 
+                width: 100%;           /* 佔滿一行，強制掉下來 */
+                white-space: normal; 
+                line-height: 1.3; 
+                font-size: 0.9rem; 
+                margin-top: 4px;       /* 與第一層的間距 */
+            }
+
+            /* 7. 副標題維持在第三層 */
+            .sub-title { 
+                white-space: normal; 
+                font-size: 0.85rem; 
+                margin-left: 0;
+                margin-top: 2px; 
+                text-align: left;
+                color: var(--list-subtitle);
+            }
+
+            /* 8. 右側區塊樣式 (維持不變，僅微調對齊) */
+            .col-next { 
+                border-left: 1px solid #333; 
+                padding-left: 8px; 
+                align-items: flex-end; 
+                text-align: right; 
+                justify-content: flex-start; 
+                border-top: none; 
+                margin-top: 0; 
+                height: 100%;          /* 確保高度撐開 */
+            }
+
+            /* Ribbon 調整 */
             .slim-card.is-playing .col-next { padding-top: 1.5rem; }
-            .next-label { display: block; font-size: 0.65rem; margin-bottom: 2px; }
+            .next-label { display: block; font-size: 0.7rem; margin-bottom: 2px; }
             .next-val-date { display: block; font-size: 0.75rem; line-height: 1.2; white-space: nowrap; }
             .next-val-time { display: block; font-size: 0.85rem; font-weight: 700; line-height: 1.2; }
+            
+            /* Controls 調整 */
             .list-controls-row { flex-direction: column; gap: 0.8rem; }
             .search-container { order: 1; }
             .pagination-container { order: 2; width: 100%; min-width: 0; }
@@ -344,9 +467,9 @@
                 { start: 266, end: 316 }, { start: 317, end: 367 }
             ],
             NAV_LINKS: [
-                { text: "🔗馬拉松直播", url: "https://www.youtube.com" },
-                { text: "🔗完整時間表", url: "https://docs.google.com/spreadsheets/d/1EkbUExn62tz82eQ5OHu1UAJ6jmtCSUh1C6cWrwV6y7M/edit?usp=sharing" },
-                { text: "🔗作者 Threads", url: "https://www.threads.com/@ptt_extremevs?hl=zh-tw" }
+                { text: "🔗 馬拉松直播", url: "https://www.youtube.com" },
+                { text: "🔗 完整時間表", url: "https://docs.google.com/spreadsheets/d/1EkbUExn62tz82eQ5OHu1UAJ6jmtCSUh1C6cWrwV6y7M/edit?usp=sharing" },
+                { text: "🔗 作者 Threads", url: "https://www.threads.com/@ptt_extremevs?hl=zh-tw" }
             ]
         };
 
@@ -571,20 +694,47 @@
                 card.className = `slim-card ${isPlaying ? 'is-playing' : ''}`;
                 let ribbon = isPlaying ? `<div class="playing-ribbon">播放中</div>` : '';
                 
-                let nextHTML = `<span class="next-label">下一輪</span><span class="next-val">${item.displayNext}</span>`;
-                const parts = item.displayNext.split(' ');
-                if(parts.length >= 2) {
-                    let dPart = parts[0]; if(parts.length === 3) dPart += ` ${parts[1]}`;
-                    nextHTML = `<span class="next-label">下一輪時間</span><span class="next-val-date">${dPart}</span><span class="next-val-time">${parts[parts.length-1]}</span>`;
+                // [修正 1] 拆解 item.displayNext 的下一輪資訊
+                const partsNext = item.displayNext.split(' ');
+                let nextLabelHtml = `<span class="next-label">下一輪</span>`;
+                let nextDateHtml = `<span class="next-val-date">${item.displayNext}</span>`;
+                let nextTimeHtml = `<span class="next-val-time"></span>`;
+                
+                if(partsNext.length >= 2) {
+                    let dPart = partsNext[0]; if(partsNext.length === 3) dPart += ` ${partsNext[1]}`;
+                    nextLabelHtml = `<span class="next-label">下一輪時間</span>`;
+                    nextDateHtml = `<span class="next-val-date">${dPart}</span>`;
+                    nextTimeHtml = `<span class="next-val-time">${partsNext[partsNext.length-1]}</span>`;
                 }
 
+                // [修正 2] 拆解 item.displayStart 為 Date/Week 和 Time 兩部分
+                const partsStart = item.displayStart.split(' ');
+                let dateStr = partsStart[0];
+                let timeStr = partsStart[partsStart.length-1];
+                if(partsStart.length === 3) dateStr += ` ${partsStart[1]}`; // 包含週幾的情況
+
+                // [修正 3] 重新建構 HTML，使用 Grid 實現三層對齊
                 card.innerHTML = `${ribbon}
-                    <div class="col-time">${item.displayStart}</div>
+                    <div class="col-time"></div> 
+                    
                     <div class="col-main">
-                        <div class="main-header"><span class="ep-tag">${item.ep}</span><div class="main-title">${cleanTitle(item.title, item.ep)}</div></div>
+                        <div class="list-date-part">${dateStr}</div>
+                        <span class="ep-tag">${item.ep}</span>
+
+                        <div class="list-time-part">${timeStr}</div>
+                        <div class="main-title">${cleanTitle(item.title, item.ep)}</div>
+
+                        <div class="sub-title-label"></div>
                         <div class="sub-title">${item.subtitle}</div>
+
+                        <span class="mobile-time-inline">${item.displayStart}</span>
                     </div>
-                    <div class="col-next">${nextHTML}</div>`;
+                    
+                    <div class="col-next">
+                        ${nextLabelHtml}
+                        ${nextDateHtml}
+                        ${nextTimeHtml}
+                    </div>`;
                 frag.appendChild(card);
             });
             container.appendChild(frag);
