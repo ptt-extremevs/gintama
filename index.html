@@ -70,41 +70,7 @@
             letter-spacing: 0.5px;
         }
         .nav-btn:hover { background-color: var(--nav-btn-hover); color: var(--nav-btn-hover-text); border-color: var(--nav-btn-hover); transform: translateY(-2px); }
-
         .nav-btn:disabled { opacity: 0.5; cursor: not-allowed; }
-
-        .btn-refresh-mini {
-            width: 45px; 
-            height: 45px; 
-            background-color: var(--nav-btn-bg);
-            color: var(--nav-btn-text);
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            text-align: center;
-            font-size: 1.2rem; 
-            cursor: pointer;
-            transition: all 0.2s ease;
-            flex-shrink: 0; 
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        .btn-refresh-mini:hover { 
-            background-color: var(--nav-btn-hover); 
-            color: var(--nav-btn-hover-text); 
-            border-color: var(--nav-btn-hover); 
-            transform: scale(1.05); 
-        }
-        .btn-refresh-mini:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
-        
-        @media (max-width: 768px) {
-            .btn-refresh-mini {
-                width: 40px;
-                height: 40px;
-                font-size: 1rem;
-            }
-        }
-
         .now-playing-section {
             background: linear-gradient(135deg, var(--active-bg) 0%, #1a1a1a 100%);
             border-radius: var(--border-radius); padding: 2rem 1.5rem; margin-bottom: 1.5rem;
@@ -362,7 +328,7 @@
                 { text: "🔗 完整時間表", url: "https://docs.google.com/spreadsheets/d/1EkbUExn62tz82eQ5OHu1UAJ6jmtCSUh1C6cWrwV6y7M/edit?usp=sharing" },
                 { text: "🔗 作者 Threads", url: "https://www.threads.com/@ptt_extremevs?hl=zh-tw" }
             ],
-            REFRESH_INTERVAL: 3600000 
+            REFRESH_INTERVAL: 840000 
         };
 
         let scheduleData = [];
@@ -387,14 +353,6 @@
                 a.target = '_blank'; a.rel = 'noopener noreferrer';
                 container.appendChild(a);
             });
-
-            const refreshBtn = document.createElement('button');
-            refreshBtn.id = 'btn-force-refresh';
-            refreshBtn.className = 'btn-refresh-mini';
-            refreshBtn.title = '更新時間表資料';
-            refreshBtn.innerHTML = '<svg class="btn-icon-adjust" viewBox="0 0 48 48" fill="currentColor"style="display: block; width: 1em; height: 1em;"><path d="M2,24a22,22,0,0,0,41.7,9.7,2,2,0,0,0-.5-2.6,2,2,0,0,0-3,.7A17.8,17.8,0,0,1,24,42,18,18,0,1,1,37.4,12H32.1A2.1,2.1,0,0,0,30,13.7,2,2,0,0,0,32,16H42a2,2,0,0,0,2-2V4.1A2.1,2.1,0,0,0,42.3,2,2,2,0,0,0,40,4V8.9A22,22,0,0,0,2,24Z"/></svg>';
-            
-            container.appendChild(refreshBtn);
         }
 
         async function fetchData() {
@@ -403,8 +361,13 @@
                 loadMockData(); 
                 return; 
             }
+            
+            // 實施快取破壞：附加時間戳記查詢參數以強制重新載入
+            const cacheBuster = Date.now();
+            const urlWithCacheBuster = `${CONFIG.SCRIPT_URL}?v=${cacheBuster}`;
+
             try {
-                const res = await fetch(CONFIG.SCRIPT_URL);
+                const res = await fetch(urlWithCacheBuster);
                 if(!res.ok) throw new Error(`HTTP Error: ${res.status}`);
                 const data = await res.json();
                 
@@ -514,7 +477,7 @@
             const sInput = document.getElementById('search-input');
             const rSelect = document.getElementById('range-select');
             
-            const refreshBtn = document.getElementById('btn-force-refresh'); 
+            // 已移除對 btn-force-refresh 的引用
 
             sInput.addEventListener('input', (e) => {
                 const q = e.target.value.toLowerCase().trim();
@@ -534,21 +497,7 @@
             rSelect.addEventListener('change', (e) => renderChunk(parseInt(e.target.value)));
             document.getElementById('btn-jump-current').addEventListener('click', () => jumpToCurrentRange(true));
 
-            if (refreshBtn) {
-                refreshBtn.addEventListener('click', () => {
-                    if (refreshBtn.disabled) return; 
-
-                    refreshBtn.disabled = true;
-                    refreshBtn.innerHTML = '...'; 
-                    refreshBtn.style.fontSize = '0.7rem'; 
-                    
-                    fetchData().finally(() => {
-                        refreshBtn.disabled = false;
-                        refreshBtn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display: block; width: 1em; height: 1em;"><path d="M21.5 2v6h-6"/><path d="M2.5 22v-6h6"/><path d="M21.5 8a10 10 0 0 0-17.92-3.87l-.9-1.25M2.5 16a10 10 0 0 0 17.92 3.87l.9 1.25"/></svg>';
-                        refreshBtn.style.fontSize = '1.2rem';
-                    });
-                });
-            }
+            // 已移除 btn-force-refresh 的事件監聽器區塊
         }
 
         function loadMockData() {
