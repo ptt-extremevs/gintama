@@ -6,33 +6,23 @@
     <title>銀魂馬拉松時間表 by extremevs</title>
     
     <style>
-        /* =========================================
-           Visual Control Center
-           ========================================= */
         :root {
-            /* System Font Stack for optimal performance */
             --font-main: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans TC", "Microsoft JhengHei", sans-serif;
             --font-mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono", "Courier New", monospace;
-
-            /* Color Palette */
             --bg-color: #121212;
             --card-bg: #1e1e1e;
             --border-color: #333333;
-            
-            --active-red: #ff5252d2; /* 播放中/活躍色 (半透明紅) */
-            --active-bg: rgba(238, 70, 70, 0.212); /* 播放中卡片背景 */
-            --highlight-fill: rgba(65, 122, 245, 0.11); /* 即將播放卡片背景 */
-
+            --active-red: #ff5252d2; 
+            --active-bg: rgba(238, 70, 70, 0.212); 
+            --highlight-fill: rgba(65, 122, 245, 0.11); 
             --nav-btn-bg: #2c2c2c;
             --nav-btn-text: #F0F6FC;
             --nav-btn-hover: #B6D0FF;
             --nav-btn-hover-text: #000;
-
-            --text-primary: #EEEEEE; /* 主要文字色 */
-            --text-secondary: #b0b0b0; /* 次要文字色 */
-            --text-accent: #EEEEEE; /* 強調文字色 */
-            --bg-accent-dark: #23384e; /* 強調背景色 (集數標籤) */
-
+            --text-primary: #EEEEEE; 
+            --text-secondary: #b0b0b0; 
+            --text-accent: #EEEEEE; 
+            --bg-accent-dark: #23384e; 
             --container-padding: 2rem;
             --border-radius: 12px;
         }
@@ -50,10 +40,8 @@
 
         input, select, button, textarea { font-family: var(--font-main); }
 
-        /* Layout */
         .container { max-width: 900px; margin: 0 auto; padding: 1.5rem var(--container-padding); }
 
-        /* Header */
         header {
             background-color: var(--card-bg); border-bottom: 1px solid var(--border-color);
             padding: 0.4rem var(--container-padding); position: sticky; top: 0; z-index: 1000;
@@ -69,8 +57,11 @@
         .clock-date { font-family: var(--font-mono); font-size: 1rem; font-weight: 500; color: var(--nav-btn-text); opacity: 0.9; }
         .clock-time { font-family: var(--font-mono); font-size: 1.3rem; font-weight: 700; color: var(--nav-btn-text); }
 
-        /* Navigation */
-        .nav-links-row { display: flex; gap: 1rem; margin-bottom: 1.5rem; flex-wrap: wrap; }
+        .nav-links-row { 
+            display: flex; gap: 1rem; margin-bottom: 1.5rem; flex-wrap: wrap; 
+            align-items: center; 
+        }
+
         .nav-btn {
             flex: 1; min-width: 120px; background-color: var(--nav-btn-bg); color: var(--nav-btn-text);
             text-decoration: none; padding: 12px; border-radius: 8px; text-align: center;
@@ -80,7 +71,40 @@
         }
         .nav-btn:hover { background-color: var(--nav-btn-hover); color: var(--nav-btn-hover-text); border-color: var(--nav-btn-hover); transform: translateY(-2px); }
 
-        /* Section: Now Playing */
+        .nav-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+        .btn-refresh-mini {
+            width: 45px; 
+            height: 45px; 
+            background-color: var(--nav-btn-bg);
+            color: var(--nav-btn-text);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            text-align: center;
+            font-size: 1.2rem; 
+            cursor: pointer;
+            transition: all 0.2s ease;
+            flex-shrink: 0; 
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .btn-refresh-mini:hover { 
+            background-color: var(--nav-btn-hover); 
+            color: var(--nav-btn-hover-text); 
+            border-color: var(--nav-btn-hover); 
+            transform: scale(1.05); 
+        }
+        .btn-refresh-mini:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+        
+        @media (max-width: 768px) {
+            .btn-refresh-mini {
+                width: 40px;
+                height: 40px;
+                font-size: 1rem;
+            }
+        }
+
         .now-playing-section {
             background: linear-gradient(135deg, var(--active-bg) 0%, #1a1a1a 100%);
             border-radius: var(--border-radius); padding: 2rem 1.5rem; margin-bottom: 1.5rem;
@@ -93,78 +117,32 @@
         .np-title { font-size: clamp(1rem, 3vw, 1.6rem); font-weight: 500; line-height: 1.2; margin: 0; color: var(--text-primary); }
         .np-layer-sub { font-size: clamp(0.9rem, 3vw, 1.3rem); font-weight: 300; margin: 0; color: var(--text-primary); }
 
-        /* Progress Bar */
         .np-progress-wrapper { width: 100%; margin-top: 1rem; padding: 0 1rem; box-sizing: border-box; }
         .np-progress-track { width: 100%; height: 6px; background: rgba(255,255,255,0.1); border-radius: 3px; overflow: hidden; position: relative; }
         .np-progress-fill { height: 100%; background: var(--active-red); width: 0%; border-radius: 3px; transition: width 1s linear; box-shadow: 0 0 10px rgba(255, 82, 82, 0.5); }
         .np-progress-info { display: flex; justify-content: space-between; font-family: var(--font-mono); font-size: 0.8rem; margin-top: 6px; color: var(--text-secondary); }
 
-        /* =========================================
-           Section: Upcoming (三層結構)
-           ========================================= */
         .upcoming-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1rem; margin-bottom: 1.5rem; }
         
         .upcoming-card { 
             background-color: var(--highlight-fill); 
             padding: 1rem; 
             border-radius: var(--border-radius); 
-            display: flex; 
-            flex-direction: column;
-            gap: 10px; /* 層與層之間的間距 */
+            display: flex; flex-direction: column; gap: 10px; 
         }
 
-        /* --- Layer 1: Meta Info (Label/Tag + Time) --- */
-        .upcoming-head-row {
-            display: flex;
-            justify-content: space-between; 
-            align-items: center;
-            width: 100%;
-        }
-
-        .upcoming-left-group {
-            display: flex;
-            align-items: center;
-            gap: 10px; 
-        }
-
-        .upcoming-label { 
-            font-size: 0.9rem; font-weight: 500; text-transform: uppercase; color: #bbbbbb; letter-spacing: 1px;
-        }
-
-        .upcoming-ep-tag { 
-            font-size: clamp(0.9rem, 3vw, 1.1rem); font-weight: 500; 
-            padding: 2px 6px; border-radius: 4px; 
-            color: var(--text-accent); background-color: var(--bg-accent-dark); 
-            white-space: nowrap; 
-        }
+        .upcoming-head-row { display: flex; justify-content: space-between; align-items: center; width: 100%; }
+        .upcoming-left-group { display: flex; align-items: center; gap: 10px; }
+        .upcoming-label { font-size: 0.9rem; font-weight: 500; text-transform: uppercase; color: #bbbbbb; letter-spacing: 1px; }
+        .upcoming-ep-tag { font-size: clamp(0.9rem, 3vw, 1.1rem); font-weight: 500; padding: 2px 6px; border-radius: 4px; color: var(--text-accent); background-color: var(--bg-accent-dark); white-space: nowrap; }
         
-        /* Time Group (Right Side) */
-        .upcoming-time-val { 
-            font-family: var(--font-mono); color: var(--text-primary); text-align: right; 
-            display: flex; align-items: baseline; gap: 8px; line-height: 1;
-        }
+        .upcoming-time-val { font-family: var(--font-mono); color: var(--text-primary); text-align: right; display: flex; align-items: baseline; gap: 8px; line-height: 1; }
         .up-val-date { font-size: 0.9rem; opacity: 0.5; font-family: var(--font-main); }
         .up-val-time { font-size: 1.4rem; font-weight: 700; }
 
-        /* --- Layer 2: Title --- */
-        .upcoming-title {
-            font-weight: 500; font-size: clamp(1rem, 3vw, 1.2rem); color: var(--text-primary);
-            line-height: 1.3;
-            width: 100%;
-            word-break: break-word; 
-        }
-
-        /* --- Layer 3: Subtitle --- */
-        .upcoming-subtitle { 
-            font-size: clamp(0.9rem, 3vw, 1.1rem); 
-            color: var(--text-primary); font-weight: 300; 
-            opacity: 0.9;
-            word-break: break-word;
-        }
+        .upcoming-title { font-weight: 500; font-size: clamp(1rem, 3vw, 1.2rem); color: var(--text-primary); line-height: 1.3; width: 100%; word-break: break-word; }
+        .upcoming-subtitle { font-size: clamp(0.9rem, 3vw, 1.1rem); color: var(--text-primary); font-weight: 300; opacity: 0.9; word-break: break-word; }
         
-        /* ========================================= */
-
-        /* Controls */
         .list-controls-row { display: flex; gap: 1rem; margin-bottom: 1rem; flex-wrap: wrap; align-items: stretch; }
         .search-container { flex: 1; min-width: 200px; }
         #search-input { width: 100%; padding: 12px; font-size: 0.9rem; height: 100%; background-color: var(--card-bg); border: 1px solid var(--border-color); border-radius: 8px; appearance: none; color: var(--text-primary); font-family: var(--font-main); }
@@ -185,110 +163,94 @@
         }
         .btn-current:hover { background-color: var(--active-bg); }
 
-        /* Schedule List */
-    .schedule-list-container { display: flex; flex-direction: column; gap: 0.5rem; }
+        .schedule-list-container { display: flex; flex-direction: column; gap: 0.5rem; }
     
-    .slim-card {
-        background-color: var(--card-bg); border: 1px solid var(--border-color);
-        border-radius: var(--border-radius); padding: 1rem;
-        display: grid; grid-template-columns: 1fr 160px;
-        align-items: center; gap: 1.5rem; position: relative; overflow: hidden;
-    }
-    .slim-card:hover { background-color: #252525; border-color: #555; }
-    
-    .slim-card.is-playing { 
-        background-color: var(--active-bg); border: 1px solid var(--active-red); 
-        box-shadow: 0 4px 12px rgba(255, 82, 82, 0.15); 
-        /* === 電腦版跳動/位移：保留 (2rem) === */
-        padding-top: 2rem; 
-    }
-    
-    .playing-ribbon { 
-        position: absolute; top: 0; right: 0; 
-        background-color: var(--active-red); 
-        color: #F0F6FC; /* 使用系統導航白色 */
-        font-size: 0.9rem; 
-        font-weight: 500; 
-        padding: 4px 10px; 
-        border-bottom-left-radius: 8px; 
-        pointer-events: none; 
-    }
-
-    .col-time { display: none !important; }
-
-    .col-main { 
-        display: grid; grid-template-columns: auto 1fr; 
-        row-gap: 0px; column-gap: 10px; overflow: hidden; min-width: 0; align-items: baseline;
-    }
-
-    .list-date-part, .list-time-part, .sub-title-label { grid-column: 1 / 2; white-space: nowrap; }
-    .list-date-part { font-size: 1rem; font-weight: 500; color: var(--text-primary); }
-    .list-time-part { font-family: var(--font-mono); font-size: 1.6rem; font-weight: 700; color: var(--text-primary); }
-    .sub-title-label { font-size: 0.85rem; color: var(--text-primary); font-weight: 300; }
-
-    .ep-tag, .main-title, .sub-title { grid-column: 2 / 3; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-    .ep-tag { font-size: 1rem; font-weight: 500; padding: 2px 8px; border-radius: 4px; display: inline-block; color: var(--text-accent); background-color: var(--bg-accent-dark); justify-self: start; }
-    .main-title { font-size: 1rem; font-weight: 500; color: var(--text-primary); }
-    .sub-title { font-size: 0.9rem; color: var(--text-primary); font-weight: 300; }
-
-    .col-next { 
-        border-left: 1px solid #333; padding-left: 1rem; text-align: right; 
-        display: grid; grid-template-rows: auto auto auto; 
-        justify-items: end; align-content: center; gap: 4px; 
-    }
-    
-    .slim-card.is-playing .col-next { 
-        /* 抵銷 padding-top: 2rem; 影響，讓右側內容置中 */
-        padding-top: 1rem; 
-    }
-
-    .next-label { font-size: 0.9rem; opacity: 0.5; text-transform: uppercase; color: var(--text-secondary); letter-spacing: 0.5px; display: block; line-height: 1.3; }
-    .next-val, .next-val-date, .next-val-time { font-family: var(--font-mono); color: var(--text-secondary); display: block; line-height: 1.3; }
-    .next-val-date { font-size: 1rem; } 
-    .next-val-time { font-size: 1.2rem; font-weight: 700; }
-    .mobile-time-inline { display: none !important; }
-
-    /* Media Queries */
-    @media (max-width: 768px) {
-        :root { --container-padding: 1rem; }
-        .upcoming-card { padding-top: 1rem; } 
-        
-        .upcoming-label { font-size: 0.8rem;}
-        .up-val-date { font-size: 0.8rem; opacity: 0.5;} 
-        .up-val-time { font-size: 1.2rem; }
-        
-        .slim-card { grid-template-columns: 1fr 85px; gap: 8px; padding: 12px 10px; align-items: flex-start; }
+        .slim-card {
+            background-color: var(--card-bg); border: 1px solid var(--border-color);
+            border-radius: var(--border-radius); padding: 1rem;
+            display: grid; grid-template-columns: 1fr 160px;
+            align-items: center; gap: 1.5rem; position: relative; overflow: hidden;
+        }
+        .slim-card:hover { background-color: #252525; border-color: #555; }
         
         .slim-card.is-playing { 
-
+            background-color: var(--active-bg); border: 1px solid var(--active-red); 
+            box-shadow: 0 4px 12px rgba(255, 82, 82, 0.15); 
             padding-top: 2rem; 
         }
+        
+        .playing-ribbon { 
+            position: absolute; top: 0; right: 0; 
+            background-color: var(--active-red); color: #F0F6FC; 
+            font-size: 0.9rem; font-weight: 500; padding: 4px 10px; 
+            border-bottom-left-radius: 8px; pointer-events: none; 
+        }
 
-        .col-time { display: none; }
-        .list-date-part { font-size: 0.8rem;}
-        .list-time-part { font-size: 1.3rem;}
-        .ep-tag { font-size: 0.9rem; padding: 1px 6px; }
-        .main-title { width: 100%; white-space: normal; line-height: 1.3; font-size: 0.9rem; margin-top: 4px; }
-        .sub-title { white-space: normal; font-size: 0.8rem; margin-left: 0; margin-top: 2px; text-align: left; color: var(--text-primary); }
+        .col-time { display: none !important; }
+
+        .col-main { 
+            display: grid; grid-template-columns: auto 1fr; 
+            row-gap: 0px; column-gap: 10px; overflow: hidden; min-width: 0; align-items: baseline;
+        }
+
+        .list-date-part, .list-time-part, .sub-title-label { grid-column: 1 / 2; white-space: nowrap; }
+        .list-date-part { font-size: 1rem; font-weight: 500; color: var(--text-primary); }
+        .list-time-part { font-family: var(--font-mono); font-size: 1.6rem; font-weight: 700; color: var(--text-primary); }
+        .sub-title-label { font-size: 0.85rem; color: var(--text-primary); font-weight: 300; }
+
+        .ep-tag, .main-title, .sub-title { grid-column: 2 / 3; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .ep-tag { font-size: 1rem; font-weight: 500; padding: 2px 8px; border-radius: 4px; display: inline-block; color: var(--text-accent); background-color: var(--bg-accent-dark); justify-self: start; }
+        .main-title { font-size: 1rem; font-weight: 500; color: var(--text-primary); }
+        .sub-title { font-size: 0.9rem; color: var(--text-primary); font-weight: 300; }
 
         .col-next { 
-            border-left: 1px solid #333; padding-left: 8px; align-items: flex-end; 
-            text-align: right; justify-content: flex-start; border-top: none; margin-top: 0; height: 100%;
+            border-left: 1px solid #333; padding-left: 1rem; text-align: right; 
+            display: grid; grid-template-rows: auto auto auto; 
+            justify-items: end; align-content: center; gap: 4px; 
         }
-
-        .slim-card.is-playing .col-next { 
-            padding-top: 0rem; 
-        }
-
-        .next-label { display: block; font-size: 0.7rem; margin-bottom: 1px; }
-        .next-val-date { display: block; font-size: 0.75rem; line-height: 1; white-space: nowrap; }
-        .next-val-time { display: block; font-size: 1.1rem; font-weight: 700; line-height: 1; }
         
-        .list-controls-row { flex-direction: column; gap: 0.8rem; }
-        .search-container { order: 1; }
-        .pagination-container { order: 2; width: 100%; min-width: 0; }
-    }
-        /* Back to Top */
+        .slim-card.is-playing .col-next { padding-top: 1rem; }
+
+        .next-label { font-size: 0.9rem; opacity: 0.5; text-transform: uppercase; color: var(--text-secondary); letter-spacing: 0.5px; display: block; line-height: 1.3; }
+        .next-val, .next-val-date, .next-val-time { font-family: var(--font-mono); color: var(--text-secondary); display: block; line-height: 1.3; }
+        .next-val-date { font-size: 1rem; } 
+        .next-val-time { font-size: 1.2rem; font-weight: 700; }
+        .mobile-time-inline { display: none !important; }
+
+        @media (max-width: 768px) {
+            :root { --container-padding: 1rem; }
+            .upcoming-card { padding-top: 1rem; } 
+            
+            .upcoming-label { font-size: 0.8rem;}
+            .up-val-date { font-size: 0.8rem; opacity: 0.5;} 
+            .up-val-time { font-size: 1.2rem; }
+            
+            .slim-card { grid-template-columns: 1fr 85px; gap: 8px; padding: 12px 10px; align-items: flex-start; }
+            .slim-card.is-playing { padding-top: 2rem; }
+
+            .col-time { display: none; }
+            .list-date-part { font-size: 0.8rem;}
+            .list-time-part { font-size: 1.3rem;}
+            .ep-tag { font-size: 0.9rem; padding: 1px 6px; }
+            .main-title { width: 100%; white-space: normal; line-height: 1.3; font-size: 0.9rem; margin-top: 4px; }
+            .sub-title { white-space: normal; font-size: 0.8rem; margin-left: 0; margin-top: 2px; text-align: left; color: var(--text-primary); }
+
+            .col-next { 
+                border-left: 1px solid #333; padding-left: 8px; align-items: flex-end; 
+                text-align: right; justify-content: flex-start; border-top: none; margin-top: 0; height: 100%;
+            }
+
+            .slim-card.is-playing .col-next { padding-top: 0rem; }
+
+            .next-label { display: block; font-size: 0.7rem; margin-bottom: 1px; }
+            .next-val-date { display: block; font-size: 0.75rem; line-height: 1; white-space: nowrap; }
+            .next-val-time { display: block; font-size: 1.1rem; font-weight: 700; line-height: 1; }
+            
+            .list-controls-row { flex-direction: column; gap: 0.8rem; }
+            .search-container { order: 1; }
+            .pagination-container { order: 2; width: 100%; min-width: 0; }
+        }
+        
         .btn-back-to-top {
             position: fixed; bottom: 30px; right: 30px; width: 50px; height: 50px;
             border-radius: 50%; background-color: var(--nav-btn-bg); color: var(--nav-btn-text);
@@ -322,7 +284,8 @@
     </header>
 
     <div class="container">
-        <div id="nav-links" class="nav-links-row"></div>
+        <div id="nav-links" class="nav-links-row">
+            </div>
 
         <section class="now-playing-section">
             <div class="np-layer-time" id="np-time">Loading...</div>
@@ -388,21 +351,18 @@
 
     <script>
         const CONFIG = {
-            // [CRITICAL] REPLACE THIS URL WITH YOUR DEPLOYED WEB APP URL
-            // Ensure the URL ends with '/exec'
-            SCRIPT_URL: 'https://script.google.com/macros/s/AKfycbzVnG-XtXLz_bFiiHGgUhn7qpbxAXyLMjUubHafoiu5LV2Xgy-ZfKGrTLaVa5Ojw0-h/exec', 
-            
+            SCRIPT_URL: 'https://script.google.com/macros/s/AKfycbyCWxv3sS3VI2HLs2YHJgV_O4y8oWn18ovi_Ljg7Fr-oSQSa-5XEEts60fiI_FcJNXB/exec', 
             PAGINATION_RANGES: [
                 { start: 1, end: 49 }, { start: 50, end: 99 }, { start: 100, end: 150 },
                 { start: 151, end: 201 }, { start: 202, end: 252 }, { start: 253, end: 265 },
                 { start: 266, end: 316 }, { start: 317, end: 367 }
             ],
             NAV_LINKS: [
-                { text: "🔗 銀魂馬拉松直播", url: "https://www.youtube.com" },  //YT直播連結
+                { text: "🔗 銀魂馬拉松直播", url: "https://www.youtube.com" },
                 { text: "🔗 完整時間表", url: "https://docs.google.com/spreadsheets/d/1EkbUExn62tz82eQ5OHu1UAJ6jmtCSUh1C6cWrwV6y7M/edit?usp=sharing" },
                 { text: "🔗 作者 Threads", url: "https://www.threads.com/@ptt_extremevs?hl=zh-tw" }
             ],
-            REFRESH_INTERVAL: 1500000 // 1500 seconds
+            REFRESH_INTERVAL: 3600000 
         };
 
         let scheduleData = [];
@@ -412,8 +372,6 @@
         document.addEventListener('DOMContentLoaded', () => {
             renderNavLinks(); 
             fetchData(); 
-            // Note: initClock is called after data might be ready, but here we call it immediately
-            // to start the clock. The internal logic handles empty data gracefully.
             initClock();
             setupEventListeners();
             setupBackToTop();
@@ -429,11 +387,19 @@
                 a.target = '_blank'; a.rel = 'noopener noreferrer';
                 container.appendChild(a);
             });
+
+            const refreshBtn = document.createElement('button');
+            refreshBtn.id = 'btn-force-refresh';
+            refreshBtn.className = 'btn-refresh-mini';
+            refreshBtn.title = '更新時間表資料';
+            refreshBtn.innerHTML = '<svg class="btn-icon-adjust" viewBox="0 0 48 48" fill="currentColor"style="display: block; width: 1em; height: 1em;"><path d="M2,24a22,22,0,0,0,41.7,9.7,2,2,0,0,0-.5-2.6,2,2,0,0,0-3,.7A17.8,17.8,0,0,1,24,42,18,18,0,1,1,37.4,12H32.1A2.1,2.1,0,0,0,30,13.7,2,2,0,0,0,32,16H42a2,2,0,0,0,2-2V4.1A2.1,2.1,0,0,0,42.3,2,2,2,0,0,0,40,4V8.9A22,22,0,0,0,2,24Z"/></svg>';
+            
+            container.appendChild(refreshBtn);
         }
 
         async function fetchData() {
             if(!CONFIG.SCRIPT_URL || CONFIG.SCRIPT_URL.length < 10) { 
-                console.warn("API URL not configured. Using Mock Data for demonstration."); 
+                console.warn("API URL not configured. Using Mock Data."); 
                 loadMockData(); 
                 return; 
             }
@@ -444,7 +410,7 @@
                 
                 if(data.error) throw new Error(data.error);
                 if(data.values) processData(data.values);
-                else loadMockData(); // Fallback
+                else loadMockData(); 
             } catch(e) { 
                 console.error("Data fetch failed:", e); 
                 if(isFirstLoad) loadMockData(); 
@@ -452,14 +418,19 @@
         }
 
         function processData(rows) {
-            scheduleData = rows.map(r => ({
-                ep: r[0] || '', 
-                title: r[1] || '', 
-                subtitle: r[2] || '',
-                dateObj: parseSheetDate(r[3]), 
-                displayStart: r[3], 
-                displayNext: r[4] || ''
-            }));
+            scheduleData = rows.map(r => {
+                const startObj = parseSheetDate(r[3]); 
+                const nextObj = parseSheetDate(r[4]);  
+                
+                return {
+                    ep: r[0] || '',       
+                    title: r[1] || '',    
+                    subtitle: r[2] || '', 
+                    dateObj: startObj,
+                    displayStart: formatDisplayTime(startObj), 
+                    displayNext: formatDisplayTime(nextObj) 
+                };
+            });
             
             calculateCurrentIndex();
             if(isFirstLoad) initPagination();
@@ -469,7 +440,6 @@
                 jumpToCurrentRange(false);
                 isFirstLoad = false;
             } else {
-                // If data refreshes, keep user on current view unless they want to jump
                 const selectEl = document.getElementById('range-select');
                 if (selectEl && !selectEl.disabled) renderChunk(parseInt(selectEl.value));
             }
@@ -477,27 +447,28 @@
 
         function parseSheetDate(str) {
             if(!str) return new Date(0);
-            let cleanStr = str.replace(/\([^\)]+\)/g, ' ').trim();
-            const now = new Date();
-            const currentYear = now.getFullYear();
-            if (/^\d{1,2}\/\d{1,2}/.test(cleanStr)) {
-                cleanStr = `${currentYear}/${cleanStr}`;
-            }
+            const cleanStr = str.toString().trim().replace(/-/g, '/');
             const timestamp = Date.parse(cleanStr);
-            if (isNaN(timestamp)) {
-                 cleanStr = str.replace(/[^\d/:\s]/g, ' ').replace(/\s+/g, ' ').trim();
-                 if (!/^\d{4}/.test(cleanStr)) cleanStr = `${currentYear}/${cleanStr}`;
-                 return new Date(cleanStr);
-            }
+            if (isNaN(timestamp)) return new Date(0);
             return new Date(timestamp);
+        }
+
+        function formatDisplayTime(date) {
+            if (!date || date.getTime() === 0) return "";
+            
+            const m = (date.getMonth() + 1).toString().padStart(2, '0');
+            const d = date.getDate().toString().padStart(2, '0');
+            const weekDay = ['週日', '週一', '週二', '週三', '週四', '週五', '週六'][date.getDay()];
+            const hh = date.getHours().toString().padStart(2, '0');
+            const mm = date.getMinutes().toString().padStart(2, '0');
+            
+            return `${m}/${d} ${weekDay} ${hh}:${mm}`;
         }
 
         function calculateCurrentIndex() {
             if (!scheduleData || scheduleData.length === 0) return;
-            
             const now = new Date();
             let idx = -1;
-            // Iterate to find the latest episode that has started
             for(let i=0; i<scheduleData.length; i++) {
                 if(scheduleData[i].dateObj <= now) idx = i; else break;
             }
@@ -530,7 +501,6 @@
             selectEl.value = targetIdx;
             selectEl.disabled = false;
             selectEl.style.opacity = '1';
-
             document.getElementById('search-input').value = '';
             renderChunk(targetIdx);
             
@@ -544,6 +514,8 @@
             const sInput = document.getElementById('search-input');
             const rSelect = document.getElementById('range-select');
             
+            const refreshBtn = document.getElementById('btn-force-refresh'); 
+
             sInput.addEventListener('input', (e) => {
                 const q = e.target.value.toLowerCase().trim();
                 if (q.length > 0) {
@@ -559,14 +531,29 @@
                     renderChunk(parseInt(rSelect.value));
                 }
             });
-            
             rSelect.addEventListener('change', (e) => renderChunk(parseInt(e.target.value)));
             document.getElementById('btn-jump-current').addEventListener('click', () => jumpToCurrentRange(true));
+
+            if (refreshBtn) {
+                refreshBtn.addEventListener('click', () => {
+                    if (refreshBtn.disabled) return; 
+
+                    refreshBtn.disabled = true;
+                    refreshBtn.innerHTML = '...'; 
+                    refreshBtn.style.fontSize = '0.7rem'; 
+                    
+                    fetchData().finally(() => {
+                        refreshBtn.disabled = false;
+                        refreshBtn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display: block; width: 1em; height: 1em;"><path d="M21.5 2v6h-6"/><path d="M2.5 22v-6h6"/><path d="M21.5 8a10 10 0 0 0-17.92-3.87l-.9-1.25M2.5 16a10 10 0 0 0 17.92 3.87l.9 1.25"/></svg>';
+                        refreshBtn.style.fontSize = '1.2rem';
+                    });
+                });
+            }
         }
 
         function loadMockData() {
             const now = new Date();
-            const fmt = d => `${String(d.getMonth()+1).padStart(2,'0')}/${String(d.getDate()).padStart(2,'0')} 週${['日','一','二','三','四','五','六'][d.getDay()]} ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;
+            const fmt = d => `${d.getFullYear()}/${String(d.getMonth()+1).padStart(2,'0')}/${String(d.getDate()).padStart(2,'0')} ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}:${String(d.getSeconds()).padStart(2,'0')}`;
             const rows = [];
             for(let i=1; i<=367; i++) {
                 const offsetHours = (i - 200) * 0.02; 
@@ -574,8 +561,8 @@
                 const nextT = new Date(t.getTime() + 604800000); 
                 rows.push([
                     `第${i}話`, 
-                    `測試標題測試${i} + 標題測試標題${i}`, 
-                    `這裡是副標題${i} + 這裡是副標題${i}`, 
+                    `測試標題${i}`, 
+                    `經典片段${i}`, 
                     fmt(t), 
                     fmt(nextT)
                 ]);
@@ -592,27 +579,16 @@
                 d.textContent = `${n.getFullYear()}/${String(n.getMonth()+1).padStart(2,'0')}/${String(n.getDate()).padStart(2,'0')} ${w[n.getDay()]}`;
                 t.textContent = `${String(n.getHours()).padStart(2,'0')}:${String(n.getMinutes()).padStart(2,'0')}:${String(n.getSeconds()).padStart(2,'0')}`;
                 
-                // === AUTOMATIC UPDATE LOGIC START ===
-                // Store previous index to detect change
                 const prevIndex = currentPlayingIndex;
-                
-                // Re-evaluate current index based on the new second
                 calculateCurrentIndex();
 
-                // If index changed (episode finished), force update UI
                 if (prevIndex !== currentPlayingIndex && scheduleData.length > 0) {
-                    console.log(`Transition Detected: Index ${prevIndex} -> ${currentPlayingIndex}`);
                     updateDashboard();
-                    
-                    // Refresh the list view to move the "Playing" ribbon
-                    // Only if user is not searching (range select is enabled)
                     const selectEl = document.getElementById('range-select');
                     if (selectEl && !selectEl.disabled) {
                         renderChunk(parseInt(selectEl.value));
                     }
                 }
-                // === AUTOMATIC UPDATE LOGIC END ===
-
                 updateProgressBar();
             };
             tick(); 
@@ -647,7 +623,6 @@
             
             document.getElementById('np-progress-bar').style.width = percent + '%';
             document.getElementById('np-elapsed').textContent = msToTime(elapsed);
-            
             const remaining = end - now;
             document.getElementById('np-remaining').textContent = (remaining < 0 ? '+' : '-') + msToTime(Math.abs(remaining));
         }
@@ -685,10 +660,9 @@
                     els.sub.textContent = item.subtitle;
                     
                     const parts = item.displayStart.split(' ');
-                    if(parts.length >= 2) {
-                        const timePart = parts.pop();
-                        const datePart = parts.join(' ');
-                        // JS 注入 Layer 1 的時間結構
+                    if(parts.length >= 3) {
+                        const timePart = parts.pop(); 
+                        const datePart = parts.join(' '); 
                         els.time.innerHTML = `<span class="up-val-date">${datePart}</span><span class="up-val-time">${timePart}</span>`;
                     } else {
                         els.time.textContent = item.displayStart;
@@ -714,19 +688,17 @@
 
             data.forEach(item => {
                 const isPlaying = (curItem && item.ep === curItem.ep && item.title === curItem.title);
-                
                 const card = document.createElement('div');
                 card.className = `slim-card ${isPlaying ? 'is-playing' : ''}`;
                 
-                // 使用 ● LIVE 標籤
                 let ribbon = isPlaying ? `<div class="playing-ribbon">● LIVE</div>` : '';
                 
                 const partsNext = item.displayNext ? item.displayNext.split(' ') : [];
                 let nextInfoHtml = '';
                 
                 if(partsNext.length > 0) {
-                     let timePart = partsNext[partsNext.length - 1];
-                     let datePart = partsNext.slice(0, -1).join(' ');
+                     let timePart = partsNext[partsNext.length - 1]; 
+                     let datePart = partsNext.slice(0, -1).join(' '); 
                      if(partsNext.length === 1) { datePart = item.displayNext; timePart = ''; }
                      
                      nextInfoHtml = `
@@ -737,8 +709,8 @@
                 }
 
                 const partsStart = item.displayStart.split(' ');
-                let startTimeStr = partsStart.pop();
-                let startDateStr = partsStart.join(' ');
+                let startTimeStr = partsStart.pop(); 
+                let startDateStr = partsStart.join(' '); 
 
                 card.innerHTML = `
                     ${ribbon}
@@ -772,4 +744,3 @@
     </script>
 </body>
 </html>
-
